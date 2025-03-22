@@ -1,9 +1,8 @@
 package org.beyondmedicine.beyondmedicinetest.domain.accesscode
 
 import jakarta.persistence.*
-import org.beyondmedicine.beyondmedicinetest.domain.constant.AccessCodeStatus
-import org.beyondmedicine.beyondmedicinetest.dto.AccessCodeInfoDto
-import org.beyondmedicine.beyondmedicinetest.dto.AccessCodeResponseDto
+import org.beyondmedicine.beyondmedicinetest.dto.AccessCodeHistoryDto
+import org.beyondmedicine.beyondmedicinetest.dto.CreateAccessCodeResponseDto
 import java.time.LocalDateTime
 
 @Entity
@@ -20,14 +19,7 @@ class AccessCodeHistory(
     val accessCode: String,
 
     @Column(nullable = false)
-    val createdAt: LocalDateTime = LocalDateTime.now(),
-
-    @Column(nullable = false)
-    val expiredAt: LocalDateTime = LocalDateTime.now(),
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    var status: AccessCodeStatus = AccessCodeStatus.ACTIVE
+    val createdAt: LocalDateTime = LocalDateTime.now()
 ) {
 
     companion object {
@@ -36,44 +28,28 @@ class AccessCodeHistory(
 
             val createdDate = LocalDateTime.now()
 
-            val expirationDate = createdDate
-                .plusDays(43)
-                .withHour(0)
-                .withMinute(0)
-                .withSecond(0)
-                .withNano(0)
-
             return AccessCodeHistory(
                 hospitalId = hospitalId,
                 accessCode = accessCode,
-                createdAt = createdDate,
-                expiredAt = expirationDate,
-                status = AccessCodeStatus.ACTIVE
+                createdAt = createdDate
             )
         }
 
-        fun toResponseDto(entity: AccessCodeHistory): AccessCodeResponseDto {
-            return AccessCodeResponseDto(
+        fun toResponseDto(entity: AccessCodeHistory): CreateAccessCodeResponseDto {
+            return CreateAccessCodeResponseDto(
                 accessCode = entity.accessCode,
                 createdAt = entity.createdAt
             )
         }
 
-        fun toInfoDto(entity: AccessCodeHistory): AccessCodeInfoDto {
-            return AccessCodeInfoDto(
+        fun toInfoDto(entity: AccessCodeHistory): AccessCodeHistoryDto {
+            return AccessCodeHistoryDto(
                 id = entity.id?: -1,
                 hospitalId = entity.hospitalId,
                 accessCode = entity.accessCode,
-                createdAt = entity.createdAt,
-                expiredAt = entity.expiredAt,
-                status = entity.status
+                createdAt = entity.createdAt
             )
         }
-    }
-
-
-    fun expire() { // 처방코드 이력의 상태 변경 메서드
-        this.status = AccessCodeStatus.EXPIRED
     }
 
     override fun equals(other: Any?): Boolean {

@@ -10,7 +10,7 @@ data class ApiResponse<T>(
 ){
     companion object{
 
-        fun <T> ok(data: T): ApiResponse<T> {
+        fun <T> ok(data: T? = null): ApiResponse<T> {
 
             val code: Int = HttpStatus.OK.value()
 

@@ -1,13 +1,13 @@
 package org.beyondmedicine.beyondmedicinetest.service.accesscode
 
-import org.beyondmedicine.beyondmedicinetest.dto.AccessCodeInfoDto
-import org.beyondmedicine.beyondmedicinetest.dto.AccessCodeRequestDto
-import org.beyondmedicine.beyondmedicinetest.dto.AccessCodeResponseDto
+import org.beyondmedicine.beyondmedicinetest.dto.ActivateAccessCodeRequestDto
+import org.beyondmedicine.beyondmedicinetest.dto.CreateAccessCodeRequestDto
+import org.beyondmedicine.beyondmedicinetest.dto.CreateAccessCodeResponseDto
 
 interface AccessCodeService {
 
-    fun createAccessCodeHistory(requestDto: AccessCodeRequestDto): AccessCodeResponseDto
-    fun isAccessCodeValid(accessCode: String): Boolean
-    fun findHistoryByAccessCode(accessCode: String): AccessCodeInfoDto
+    fun createAccessCodeHistory(requestDto: CreateAccessCodeRequestDto): CreateAccessCodeResponseDto
+
+    fun activateAccessCode(requestDto: ActivateAccessCodeRequestDto)
 
 }

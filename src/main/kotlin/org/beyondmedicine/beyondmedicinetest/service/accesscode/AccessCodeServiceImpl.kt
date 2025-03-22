@@ -2,26 +2,28 @@ package org.beyondmedicine.beyondmedicinetest.service.accesscode
 
 
 import org.beyondmedicine.beyondmedicinetest.domain.accesscode.AccessCodeHistory
+import org.beyondmedicine.beyondmedicinetest.domain.accesscode.UserAccessCode
 import org.beyondmedicine.beyondmedicinetest.domain.constant.AccessCodeStatus
-import org.beyondmedicine.beyondmedicinetest.dto.AccessCodeInfoDto
-import org.beyondmedicine.beyondmedicinetest.dto.AccessCodeRequestDto
-import org.beyondmedicine.beyondmedicinetest.dto.AccessCodeResponseDto
-import org.beyondmedicine.beyondmedicinetest.repository.accesscode.AccessCodeRepository
+import org.beyondmedicine.beyondmedicinetest.dto.ActivateAccessCodeRequestDto
+import org.beyondmedicine.beyondmedicinetest.dto.CreateAccessCodeRequestDto
+import org.beyondmedicine.beyondmedicinetest.dto.CreateAccessCodeResponseDto
+import org.beyondmedicine.beyondmedicinetest.repository.accesscode.AccessCodeHistoryRepository
+import org.beyondmedicine.beyondmedicinetest.repository.accesscode.UserAccessCodeRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.security.SecureRandom
-import java.time.LocalDateTime
 import kotlin.random.Random
 
 @Service
 class AccessCodeServiceImpl(
-    private val accessCodeRepository: AccessCodeRepository,
+    private val accessCodeRepository: AccessCodeHistoryRepository,
+    private val userAccessCodeRepository: UserAccessCodeRepository,
     private val random: SecureRandom
 ) : AccessCodeService {
 
     // 처방코드 생성 로직
     @Transactional
-    override fun createAccessCodeHistory(requestDto: AccessCodeRequestDto): AccessCodeResponseDto {
+    override fun createAccessCodeHistory(requestDto: CreateAccessCodeRequestDto): CreateAccessCodeResponseDto {
 
         val hospitalId: String = requestDto.hospitalId
         // 처방코드 생성
@@ -35,42 +37,54 @@ class AccessCodeServiceImpl(
 
     }
 
-    // 처방코드 유효성 검사 로직
     @Transactional
-    override fun isAccessCodeValid(accessCode: String): Boolean {
+    override fun activateAccessCode(requestDto: ActivateAccessCodeRequestDto) {
 
-        val accessCodeHistory: AccessCodeHistory = accessCodeRepository.findByAccessCode(accessCode) ?: return false
+        // Validation 과정 요약
+        // 1. accessCode 가 존재하는지 확인
+        // 2. userId 가 존재하는지 확인
+        //    - 존재하지 않는경우 userAccessCode 생성
+        //    - 존재 하는 경우 active 상태의 userAccessCode 가 있는지 확인
+        //       - 있을 경우 만료 상태 확인
+        //       - 만료 상태일 경우 EXPIRED 상태로 UPDATE 후 userAccessCode 생성
+        //       - 만료 상태가 아닐 경우 이미 active 상태임으로 에러 처리
+        //    - 없을 경우 userAccessCode 생성
+        
+        val userId: String = requestDto.userId
 
-        val expiredDate: LocalDateTime = accessCodeHistory.expiredAt
+        val accessCode: String = requestDto.accessCode
+        
+        validateAccessCode(accessCode)
 
-        val now: LocalDateTime = LocalDateTime.now()
+        val existingUserAccessCode: UserAccessCode? = userAccessCodeRepository.findByUserIdAndStatus(userId, AccessCodeStatus.ACTIVE)
+        
+        if (existingUserAccessCode != null) {
 
-        val status = accessCodeHistory.status
+            if (existingUserAccessCode.isExpired()) {
 
-        // 유효성 확인시 만료작업을 진행하나, 매일 자정에 스케쥴러를 통한 배치 처리도 고려
-        when {
-            status == AccessCodeStatus.EXPIRED -> return false
+                existingUserAccessCode.expire()
 
-            expiredDate.isBefore(now) || expiredDate.isEqual(now) -> { // 현재시간이 만료시간과 같거나 이전인 경우
-                accessCodeHistory.expire()
-                accessCodeRepository.save(accessCodeHistory) // 만료처리후 저장
-                return false
-            }
+                userAccessCodeRepository.save(existingUserAccessCode)
 
-            else -> return true
+                createAndSaveUserAccessCode(userId, accessCode)
+
+            } else throw IllegalStateException("User already has active access code")
+
+        }else{
+            createAndSaveUserAccessCode(userId, accessCode)
         }
+
     }
 
-    // 처방코드 조회 로직
-    @Transactional(readOnly = true)
-    override fun findHistoryByAccessCode(accessCode: String): AccessCodeInfoDto {
+    private fun createAndSaveUserAccessCode(userId: String, accessCode: String) {
 
-        val accessCodeHistory: AccessCodeHistory = accessCodeRepository.findByAccessCode(accessCode) ?: throw RuntimeException("History not found")
+        val userAccessCode = UserAccessCode.activateAccessCode(userId, accessCode)
 
-        return AccessCodeHistory.toInfoDto(accessCodeHistory)
+        userAccessCodeRepository.save(userAccessCode)
     }
 
-
+    private fun validateAccessCode(accessCode: String) = accessCodeRepository.findByAccessCode(accessCode)
+        ?: throw IllegalArgumentException("Access code not found")
 
     private fun generateNewAccessCode(): String {
 
