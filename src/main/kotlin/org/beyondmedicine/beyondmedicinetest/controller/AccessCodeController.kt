@@ -1,5 +1,6 @@
 package org.beyondmedicine.beyondmedicinetest.controller
 
+import org.beyondmedicine.beyondmedicinetest.dto.ActivateAccessCodeRequestDto
 import org.beyondmedicine.beyondmedicinetest.dto.CreateAccessCodeRequestDto
 import org.beyondmedicine.beyondmedicinetest.dto.CreateAccessCodeResponseDto
 import org.beyondmedicine.beyondmedicinetest.dto.ApiResponse
@@ -23,5 +24,15 @@ class AccessCodeController(
         val result: CreateAccessCodeResponseDto = accessCodeService.createAccessCodeHistory(requestDto)
 
         return ApiResponse.ok(result)
+    }
+
+    @PostMapping("/access-code-activations")
+    fun activateAccessCode(
+        @RequestBody requestDto: ActivateAccessCodeRequestDto
+    ): ApiResponse<CreateAccessCodeResponseDto> {
+
+        accessCodeService.activateAccessCode(requestDto)
+
+        return ApiResponse.ok()
     }
 }
