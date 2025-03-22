@@ -3,6 +3,7 @@ package org.beyondmedicine.beyondmedicinetest.prescription.domain
 import jakarta.persistence.*
 import org.beyondmedicine.beyondmedicinetest.prescription.dto.AccessCodeHistoryDto
 import org.beyondmedicine.beyondmedicinetest.prescription.dto.CreateAccessCodeResponseDto
+import org.hibernate.annotations.CreationTimestamp
 import java.time.LocalDateTime
 
 @Entity
@@ -18,6 +19,7 @@ class AccessCodeHistory(
     @Column(nullable = false, length = 8, unique = true)
     val accessCode: String,
 
+    @CreationTimestamp
     @Column(nullable = false)
     val createdAt: LocalDateTime = LocalDateTime.now()
 ) {
@@ -26,13 +28,11 @@ class AccessCodeHistory(
         // 새로운 처방코드 생성 팩터리 메서드
         fun createNewAccessCodeHistory(hospitalId: String, accessCode: String): AccessCodeHistory {
 
-            val createdDate = LocalDateTime.now()
-
             return AccessCodeHistory(
                 hospitalId = hospitalId,
-                accessCode = accessCode,
-                createdAt = createdDate
+                accessCode = accessCode
             )
+
         }
 
         fun toResponseDto(entity: AccessCodeHistory): CreateAccessCodeResponseDto {
