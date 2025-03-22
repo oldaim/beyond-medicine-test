@@ -126,12 +126,4 @@ class AccessCodeServiceImpl(
 
         return String(combined)
     }
-
-    private fun validateUserAccessCode(userId: String, accessCode: String) {
-
-        // userId 가 존재하는지 확인
-        // accessCode 가 존재하는지 확인
-        // accessCode 가 active 상태인지 확인
-        // accessCode 가 만료되지 않았는지 확인
-    }
 }
