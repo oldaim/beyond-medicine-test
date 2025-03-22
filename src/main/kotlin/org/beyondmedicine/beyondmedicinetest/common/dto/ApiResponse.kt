@@ -1,7 +1,6 @@
-package org.beyondmedicine.beyondmedicinetest.dto
+package org.beyondmedicine.beyondmedicinetest.common.dto
 
 import org.springframework.http.HttpStatus
-import org.springframework.http.HttpStatusCode
 
 data class ApiResponse<T>(
     val code: Int,

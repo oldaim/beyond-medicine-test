@@ -1,14 +1,14 @@
-package org.beyondmedicine.beyondmedicinetest.service.accesscode
+package org.beyondmedicine.beyondmedicinetest.prescription.service
 
 
-import org.beyondmedicine.beyondmedicinetest.domain.accesscode.AccessCodeHistory
-import org.beyondmedicine.beyondmedicinetest.domain.accesscode.UserAccessCode
-import org.beyondmedicine.beyondmedicinetest.domain.constant.AccessCodeStatus
-import org.beyondmedicine.beyondmedicinetest.dto.ActivateAccessCodeRequestDto
-import org.beyondmedicine.beyondmedicinetest.dto.CreateAccessCodeRequestDto
-import org.beyondmedicine.beyondmedicinetest.dto.CreateAccessCodeResponseDto
-import org.beyondmedicine.beyondmedicinetest.repository.accesscode.AccessCodeHistoryRepository
-import org.beyondmedicine.beyondmedicinetest.repository.accesscode.UserAccessCodeRepository
+import org.beyondmedicine.beyondmedicinetest.prescription.domain.AccessCodeHistory
+import org.beyondmedicine.beyondmedicinetest.prescription.domain.UserAccessCode
+import org.beyondmedicine.beyondmedicinetest.prescription.domain.constant.AccessCodeStatus
+import org.beyondmedicine.beyondmedicinetest.prescription.dto.ActivateAccessCodeRequestDto
+import org.beyondmedicine.beyondmedicinetest.prescription.dto.CreateAccessCodeRequestDto
+import org.beyondmedicine.beyondmedicinetest.prescription.dto.CreateAccessCodeResponseDto
+import org.beyondmedicine.beyondmedicinetest.prescription.repository.AccessCodeHistoryRepository
+import org.beyondmedicine.beyondmedicinetest.prescription.repository.UserAccessCodeRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.security.SecureRandom

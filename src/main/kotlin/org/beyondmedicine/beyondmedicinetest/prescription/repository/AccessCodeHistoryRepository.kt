@@ -1,6 +1,6 @@
-package org.beyondmedicine.beyondmedicinetest.repository.accesscode
+package org.beyondmedicine.beyondmedicinetest.prescription.repository
 
-import org.beyondmedicine.beyondmedicinetest.domain.accesscode.AccessCodeHistory
+import org.beyondmedicine.beyondmedicinetest.prescription.domain.AccessCodeHistory
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 

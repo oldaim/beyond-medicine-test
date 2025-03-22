@@ -1,8 +1,8 @@
-package org.beyondmedicine.beyondmedicinetest.domain.accesscode
+package org.beyondmedicine.beyondmedicinetest.prescription.domain
 
 import jakarta.persistence.*
-import org.beyondmedicine.beyondmedicinetest.dto.AccessCodeHistoryDto
-import org.beyondmedicine.beyondmedicinetest.dto.CreateAccessCodeResponseDto
+import org.beyondmedicine.beyondmedicinetest.prescription.dto.AccessCodeHistoryDto
+import org.beyondmedicine.beyondmedicinetest.prescription.dto.CreateAccessCodeResponseDto
 import java.time.LocalDateTime
 
 @Entity

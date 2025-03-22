@@ -1,7 +1,7 @@
-package org.beyondmedicine.beyondmedicinetest.domain.accesscode
+package org.beyondmedicine.beyondmedicinetest.prescription.domain
 
 import jakarta.persistence.*
-import org.beyondmedicine.beyondmedicinetest.domain.constant.AccessCodeStatus
+import org.beyondmedicine.beyondmedicinetest.prescription.domain.constant.AccessCodeStatus
 import java.time.LocalDateTime
 
 @Entity
