@@ -2,4 +2,14 @@ spring:
   application:
     name: beyond-medicine-test
 
+  datasource:
+    url: jdbc:mysql://localhost:3306/test
+    username: oldaim
+    password: oldaim
+    driver-class-name: com.mysql.cj.jdbc.Driver
 
+  jpa:
+    database: mysql
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
