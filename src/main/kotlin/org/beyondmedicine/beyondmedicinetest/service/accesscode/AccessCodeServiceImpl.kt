@@ -2,20 +2,18 @@ package org.beyondmedicine.beyondmedicinetest.service.accesscode
 
 
 import org.beyondmedicine.beyondmedicinetest.domain.accesscode.AccessCodeHistory
-import org.beyondmedicine.beyondmedicinetest.domain.constant.AccessCodeStatus
-import org.beyondmedicine.beyondmedicinetest.dto.AccessCodeInfoDto
+import org.beyondmedicine.beyondmedicinetest.dto.AccessCodeHistoryDto
 import org.beyondmedicine.beyondmedicinetest.dto.AccessCodeRequestDto
 import org.beyondmedicine.beyondmedicinetest.dto.AccessCodeResponseDto
-import org.beyondmedicine.beyondmedicinetest.repository.accesscode.AccessCodeRepository
+import org.beyondmedicine.beyondmedicinetest.repository.accesscode.AccessCodeHistoryRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.security.SecureRandom
-import java.time.LocalDateTime
 import kotlin.random.Random
 
 @Service
 class AccessCodeServiceImpl(
-    private val accessCodeRepository: AccessCodeRepository,
+    private val accessCodeRepository: AccessCodeHistoryRepository,
     private val random: SecureRandom
 ) : AccessCodeService {
 
@@ -36,34 +34,14 @@ class AccessCodeServiceImpl(
     }
 
     // 처방코드 유효성 검사 로직
-    @Transactional
+    @Transactional(readOnly = true)
     override fun isAccessCodeValid(accessCode: String): Boolean {
-
-        val accessCodeHistory: AccessCodeHistory = accessCodeRepository.findByAccessCode(accessCode) ?: return false
-
-        val expiredDate: LocalDateTime = accessCodeHistory.expiredAt
-
-        val now: LocalDateTime = LocalDateTime.now()
-
-        val status = accessCodeHistory.status
-
-        // 유효성 확인시 만료작업을 진행하나, 매일 자정에 스케쥴러를 통한 배치 처리도 고려
-        when {
-            status == AccessCodeStatus.EXPIRED -> return false
-
-            expiredDate.isBefore(now) || expiredDate.isEqual(now) -> { // 현재시간이 만료시간과 같거나 이전인 경우
-                accessCodeHistory.expire()
-                accessCodeRepository.save(accessCodeHistory) // 만료처리후 저장
-                return false
-            }
-
-            else -> return true
-        }
+        TODO()
     }
 
     // 처방코드 조회 로직
     @Transactional(readOnly = true)
-    override fun findHistoryByAccessCode(accessCode: String): AccessCodeInfoDto {
+    override fun findHistoryByAccessCode(accessCode: String): AccessCodeHistoryDto {
 
         val accessCodeHistory: AccessCodeHistory = accessCodeRepository.findByAccessCode(accessCode) ?: throw RuntimeException("History not found")
 

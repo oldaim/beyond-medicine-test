@@ -1,7 +1,6 @@
 package org.beyondmedicine.beyondmedicinetest.dto
 
 import jakarta.validation.constraints.NotBlank
-import org.beyondmedicine.beyondmedicinetest.domain.constant.AccessCodeStatus
 import java.time.LocalDateTime
 
 // 처방코드 생성 요청 DTO
@@ -17,11 +16,9 @@ data class AccessCodeResponseDto(
 )
 
 // 내부 Service 전달용 처방코드 정보 DTO
-data class AccessCodeInfoDto(
+data class AccessCodeHistoryDto(
     val id: Long,
     val hospitalId: String,
     val accessCode: String,
-    val createdAt: LocalDateTime,
-    val expiredAt: LocalDateTime,
-    val status: AccessCodeStatus
+    val createdAt: LocalDateTime
 )
