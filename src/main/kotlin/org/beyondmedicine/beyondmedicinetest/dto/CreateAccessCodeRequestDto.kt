@@ -4,13 +4,13 @@ import jakarta.validation.constraints.NotBlank
 import java.time.LocalDateTime
 
 // 처방코드 생성 요청 DTO
-data class AccessCodeRequestDto(
+data class CreateAccessCodeRequestDto(
     @field:NotBlank(message = "hospitalId cannot be blank")
     val hospitalId: String,
 )
 
 // 처방코드 생성 응답 DTO
-data class AccessCodeResponseDto(
+data class CreateAccessCodeResponseDto(
     val accessCode: String,
     val createdAt: LocalDateTime,
 )

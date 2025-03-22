@@ -6,7 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository
 
 interface UserAccessCodeRepository: JpaRepository<UserAccessCode, Long> {
 
-    fun existsByStatus(status: AccessCodeStatus): Boolean
-    fun existsByUserId(userId: String): Boolean
+    fun findByUserIdAndStatus(userId: String, status: AccessCodeStatus): UserAccessCode?
 
 }

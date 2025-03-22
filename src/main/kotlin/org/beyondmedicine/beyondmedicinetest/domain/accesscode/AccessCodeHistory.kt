@@ -1,9 +1,8 @@
 package org.beyondmedicine.beyondmedicinetest.domain.accesscode
 
 import jakarta.persistence.*
-import org.beyondmedicine.beyondmedicinetest.domain.constant.AccessCodeStatus
 import org.beyondmedicine.beyondmedicinetest.dto.AccessCodeHistoryDto
-import org.beyondmedicine.beyondmedicinetest.dto.AccessCodeResponseDto
+import org.beyondmedicine.beyondmedicinetest.dto.CreateAccessCodeResponseDto
 import java.time.LocalDateTime
 
 @Entity
@@ -36,8 +35,8 @@ class AccessCodeHistory(
             )
         }
 
-        fun toResponseDto(entity: AccessCodeHistory): AccessCodeResponseDto {
-            return AccessCodeResponseDto(
+        fun toResponseDto(entity: AccessCodeHistory): CreateAccessCodeResponseDto {
+            return CreateAccessCodeResponseDto(
                 accessCode = entity.accessCode,
                 createdAt = entity.createdAt
             )
