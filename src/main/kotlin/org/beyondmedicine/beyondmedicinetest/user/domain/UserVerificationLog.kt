@@ -13,16 +13,16 @@ class UserVerificationLog (
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
 
-    @Column(nullable = false, length = 32)
+    @Column(nullable = false, length = 40)
     val userId: String,
 
     @Column(nullable = false, length = 30)
     val version: String,
 
-    @Column(nullable = false, length = 20)
+    @Column(nullable = false, length = 30)
     val os: String,
 
-    @Column(nullable = false, length = 10)
+    @Column(nullable = false, length = 30)
     val mode: String,
 
     @Column(nullable = false, length = 100)
@@ -34,15 +34,6 @@ class UserVerificationLog (
 
 ){
     companion object{
-        fun createUserLog(userId: String, version: String, os: String, mode: String, hash: String): UserVerificationLog{
-            return UserVerificationLog(
-                userId = userId,
-                version = version,
-                os = os,
-                mode = mode,
-                hash = hash
-            )
-        }
         
         fun fromDto(dto: UserVerificationLogDto): UserVerificationLog {
             return UserVerificationLog(

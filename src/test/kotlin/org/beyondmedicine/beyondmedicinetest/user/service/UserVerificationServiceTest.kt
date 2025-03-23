@@ -4,7 +4,6 @@ import com.ninjasquad.springmockk.MockkBean
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
 import io.mockk.every
-import io.mockk.mockkStatic
 import io.mockk.verify
 import org.beyondmedicine.beyondmedicinetest.common.exception.UserAccessCodeNotActivatedException
 import org.beyondmedicine.beyondmedicinetest.prescription.service.AccessCodeService
@@ -22,8 +21,6 @@ import org.junit.jupiter.params.provider.ValueSource
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.junit.jupiter.SpringExtension
-import java.security.MessageDigest
-import java.util.*
 
 @ExtendWith(SpringExtension::class)
 @SpringBootTest
@@ -36,16 +33,13 @@ class UserVerificationServiceTest {
     @MockkBean
     private lateinit var accessCodeService: AccessCodeService
 
-    @MockkBean
-    private lateinit var messageDigest: MessageDigest
-
     private lateinit var userVerificationService: UserVerificationService
 
     private val testUserId = "e4e3ecbd-2208-4905-8120-426473d0eae9"
     private val testVersion = "1.0.0"
     private val testOs = "android"
     private val testMode = "debug"
-    private val testHash = "Y95ULTuEF0uXNq7fSNa1EEzP0FU="
+    private val testHash = "3f071a178aed4eee8a77e34999ba37d88b62d36a3624e5a0d6292ea8cb2eebdc"
     private val testRequestHashSecret = "testSecret"
 
     @BeforeEach
@@ -53,8 +47,7 @@ class UserVerificationServiceTest {
         userVerificationService = UserVerificationServiceImpl(
             userVerificationRepository,
             accessCodeService,
-            testRequestHashSecret,
-            messageDigest
+            testRequestHashSecret
         )
     }
 
@@ -83,7 +76,6 @@ class UserVerificationServiceTest {
         // mocks
         every { userVerificationRepository.findAppVersionByOsAndMode(testOs, testMode) } returns appVersionDto
         every { accessCodeService.isUserAccessCodeActivated(testUserId) } returns true
-        mockHashValidation(true)
 
         // when
         val result = userVerificationService.verifyUserRequest(requestDto)
@@ -122,7 +114,7 @@ class UserVerificationServiceTest {
         // mocks
         every { userVerificationRepository.findAppVersionByOsAndMode(testOs, testMode) } returns appVersionDto
         every { accessCodeService.isUserAccessCodeActivated(testUserId) } returns true
-        mockHashValidation(true)
+
 
         // when
         val result: UpdateStatus = userVerificationService.verifyUserRequest(requestDto)
@@ -160,7 +152,7 @@ class UserVerificationServiceTest {
         // mocks
         every { userVerificationRepository.findAppVersionByOsAndMode(testOs, testMode) } returns appVersionDto
         every { accessCodeService.isUserAccessCodeActivated(testUserId) } returns true
-        mockHashValidation(true)
+
 
         // when
         val result: UpdateStatus = userVerificationService.verifyUserRequest(requestDto)
@@ -223,7 +215,7 @@ class UserVerificationServiceTest {
         // mocks
         every { userVerificationRepository.findAppVersionByOsAndMode(testOs, testMode) } returns appVersionDto
         every { accessCodeService.isUserAccessCodeActivated(testUserId) } returns true
-        mockHashValidation(true)
+
 
         // when
         val result = userVerificationService.verifyUserRequest(requestDto)
@@ -258,7 +250,7 @@ class UserVerificationServiceTest {
         // mocks
         every { userVerificationRepository.findAppVersionByOsAndMode(testOs, testMode) } returns appVersionDto
         every { accessCodeService.isUserAccessCodeActivated(testUserId) } returns true
-        mockHashValidation(true)
+
 
         // when
         val result = userVerificationService.verifyUserRequest(requestDto)
@@ -375,7 +367,6 @@ class UserVerificationServiceTest {
         // mocks
         every { userVerificationRepository.findAppVersionByOsAndMode(testOs, testMode) } returns appVersionDto
 
-        mockHashValidation(false)
 
         // when & then
         val exception = shouldThrow<IllegalArgumentException> {
@@ -412,7 +403,6 @@ class UserVerificationServiceTest {
         // mocks
         every { userVerificationRepository.findAppVersionByOsAndMode(testOs, testMode) } returns appVersionDto
         every { accessCodeService.isUserAccessCodeActivated(testUserId) } returns false
-        mockHashValidation(true)
 
         // when & then
         val exception: UserAccessCodeNotActivatedException = shouldThrow<UserAccessCodeNotActivatedException> {
@@ -452,19 +442,6 @@ class UserVerificationServiceTest {
         verify(exactly = 1) { userVerificationRepository.saveUserVerificationLog(any()) }
     }
 
-
-    // 테스트 코드를 위한 Hash 검증 Mock 설정
-    private fun mockHashValidation(isValid: Boolean) {
-        // Mock MessageDigest
-        every { messageDigest.digest(any()) } returns "mockDigest".toByteArray()
-        
-        // mock hash value
-        val mockEncoderOutput = if (isValid) testHash else "Different="
-        
-        // Use reflection to mock the static Base64.getEncoder().encodeToString() call
-        mockkStatic(Base64::class)
-        every { Base64.getEncoder().encodeToString(any()) } returns mockEncoderOutput
-    }
 }
 
 

@@ -1,5 +1,6 @@
 package org.beyondmedicine.beyondmedicinetest.user.service
 
+import org.apache.commons.codec.digest.DigestUtils
 import org.beyondmedicine.beyondmedicinetest.common.exception.UserAccessCodeNotActivatedException
 import org.beyondmedicine.beyondmedicinetest.prescription.service.AccessCodeService
 import org.beyondmedicine.beyondmedicinetest.user.constants.UpdateStatus
@@ -10,8 +11,6 @@ import org.beyondmedicine.beyondmedicinetest.user.repository.UserVerificationRep
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.security.MessageDigest
-import java.util.*
 
 @Service
 class UserVerificationServiceImpl(
@@ -19,7 +18,6 @@ class UserVerificationServiceImpl(
     private val accessCodeService: AccessCodeService,
     @Value("\${verification.hash.secret}")
     private val requestHashSecret: String,
-    private val messageDigest: MessageDigest
 ) : UserVerificationService {
 
     @Transactional(readOnly = true)
@@ -144,8 +142,10 @@ class UserVerificationServiceImpl(
     // os와 mode로 생성한 hash를 반환
     private fun getHashString(os: String, mode: String): String {
         val hashString = "$os$mode$requestHashSecret"
-        val hashBytes: ByteArray = messageDigest.digest(hashString.toByteArray(Charsets.UTF_8))
-        return Base64.getEncoder().encodeToString(hashBytes)
+
+        val hashedString = DigestUtils.sha256Hex(hashString)
+
+        return hashedString
     }
 
     // os와 mode에 해당하는 AppVersion을 찾아서 AppVersionDto로 변환

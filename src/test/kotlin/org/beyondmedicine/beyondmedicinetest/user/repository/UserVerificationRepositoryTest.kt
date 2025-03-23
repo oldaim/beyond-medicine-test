@@ -31,7 +31,7 @@ class UserVerificationRepositoryTest {
     private val testVersion = "1.0.0"
     private val testOs = "Android"
     private val testMode = "release"
-    private val testHash = "Y95ULTuEF0uXNq7fSNa1EEzP0FU="
+    private val testHash = "370901f93faca101b6a15d64325bb0d93de06cad06cbfd41ca196891c4edb145"
 
     @BeforeEach
     fun setup() {

@@ -55,13 +55,17 @@ class AccessCodeServiceImpl(
                 // DB 수준에서 중복키 예외가 발생한 경우
                 attempt++
 
-                if (attempt >= maxAttempt) throw AccessCodeRetryFailException("Failed to generate new access code after $maxAttempt attempts")
+                if (attempt >= maxAttempt) {
+                    logger.error("Failed to generate new access code after $maxAttempt attempts")
+                    throw AccessCodeRetryFailException("Failed to generate new access code after $maxAttempt attempts")
+                }
 
                 // 로그 남기기
                 logger.warn("Access code collision detected, retrying (attempt $attempt of $maxAttempt)")
             }
         }
 
+        logger.error("Failed to generate new access code after $maxAttempt attempts")
         throw AccessCodeRetryFailException("Failed to generate new access code after $maxAttempt attempts")
     }
 
@@ -78,6 +82,7 @@ class AccessCodeServiceImpl(
         //    - 없을 경우 userAccessCode 생성
         
         val userId: String = requestDto.userId
+
         val accessCode: String = requestDto.accessCode
         
         validateAccessCode(accessCode)
@@ -141,9 +146,9 @@ class AccessCodeServiceImpl(
         val random = Random(randomSeed)
 
         // 4자리 문자열 생성
-        val letters: String = (1..4).map { ('A' .. 'Z').random(random) }.joinToString { "" }
+        val letters: String = (1..4).map { ('A' .. 'Z').random(random) }.joinToString("")
         // 4자리 숫자열 생성
-        val numbers: String = (1..4).map { ('0' .. '9').random(random) }.joinToString { "" }
+        val numbers: String = (1..4).map { ('0' .. '9').random(random) }.joinToString("")
 
         // 조합 후 섞기
         val combined: CharArray = ("$letters$numbers").toCharArray()

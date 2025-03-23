@@ -17,28 +17,15 @@ class AppVersion (
     @Column(name = "minimum_version", nullable = false, length = 30)
     val minimumVersion: String,
 
-    @Column(nullable = false, length = 20)
+    @Column(nullable = false, length = 30)
     val os: String,
 
-    @Column(nullable = false, length = 10)
+    @Column(nullable = false, length = 30)
     val mode: String,
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 100)
     val hash: String
 ){
-
-    companion object{
-        fun toDto(entity: AppVersion): AppVersionDto {
-            return AppVersionDto(
-                id = entity.id,
-                latestVersion = entity.latestVersion,
-                minimumVersion = entity.minimumVersion,
-                os = entity.os,
-                mode = entity.mode,
-                hash = entity.hash
-            )
-        }
-    }
 
     fun toDto(): AppVersionDto {
         return AppVersionDto(
