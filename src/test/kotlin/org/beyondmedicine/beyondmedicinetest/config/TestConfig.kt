@@ -17,12 +17,3 @@ import java.lang.annotation.Inherited
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 annotation class JpaRepositoryTest
 
-/**
- * 서비스 계층 테스트용 기본 설정을 위한 어노테이션
- */
-@Target(AnnotationTarget.CLASS)
-@Retention(AnnotationRetention.RUNTIME)
-@MustBeDocumented
-@Inherited
-@ActiveProfiles("test")
-annotation class ServiceTest

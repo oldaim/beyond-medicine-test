@@ -1,7 +1,8 @@
 package org.beyondmedicine.beyondmedicinetest.prescription.service
-/*
+
 import com.ninjasquad.springmockk.MockkBean
 import io.kotest.assertions.throwables.shouldThrow
+import io.kotest.matchers.collections.shouldBeIn
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import io.mockk.every
@@ -11,7 +12,7 @@ import io.mockk.verify
 import org.beyondmedicine.beyondmedicinetest.config.ServiceTest
 import org.beyondmedicine.beyondmedicinetest.prescription.domain.constant.AccessCodeStatus
 import org.beyondmedicine.beyondmedicinetest.prescription.dto.*
-import org.beyondmedicine.beyondmedicinetest.prescription.repository.custom.AccessCodeRepository
+import org.beyondmedicine.beyondmedicinetest.prescription.repository.AccessCodeRepository
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
@@ -49,7 +50,7 @@ class AccessCodeServiceTest {
     }
 
     @Test
-    @DisplayName("처방 코드 생성 성공 테스트")
+    @DisplayName("처방 코드 생성 - 성공")
     fun createAccessCodeHistory_success() {
         // given
         val requestDto = CreateAccessCodeRequestDto(hospitalId = testHospitalId)
@@ -64,23 +65,40 @@ class AccessCodeServiceTest {
         every { accessCodeRepository.existsByAccessCode(any()) } returns false
         
         // DTO 저장 성공 가정
-        every { 
-            accessCodeRepository.saveAccessCodeHistory(any()) 
-        } returns savedAccessCodeHistoryDto
+        every { accessCodeRepository.saveAccessCodeHistory(any()) } returns savedAccessCodeHistoryDto
         
         // when
-        val result = accessCodeService.createAccessCodeHistory(requestDto)
+        val result: CreateAccessCodeResponseDto = accessCodeService.createAccessCodeHistory(requestDto)
         
         // then
         result.accessCode shouldBe testAccessCode
         result.createdAt shouldNotBe null
         
-        verify { accessCodeRepository.existsByAccessCode(any()) }
-        verify { accessCodeRepository.saveAccessCodeHistory(any()) }
+        verify(exactly = 1) { accessCodeRepository.existsByAccessCode(any()) }
+        verify(exactly = 1) { accessCodeRepository.saveAccessCodeHistory(any()) }
+    }
+
+    @Test
+    @DisplayName("처방 코드 생성 - access code 재시도 10번 시도후 실패")
+    fun createAccessCodeHistory_retryExceeded_throwsException() {
+        // given
+        val requestDto = CreateAccessCodeRequestDto(hospitalId = testHospitalId)
+
+        // 존재하는 accessCode로 가정
+        every { accessCodeRepository.existsByAccessCode(any()) } returns true
+
+        // when & then
+        val exception = shouldThrow<RuntimeException> {
+            accessCodeService.createAccessCodeHistory(requestDto)
+        }
+
+        exception.message shouldBe "Failed to generate new access code after 10 attempts"
+
+        verify(exactly = 10) { accessCodeRepository.existsByAccessCode(any()) }
     }
     
     @Test
-    @DisplayName("activateAccessCode - 코드 활성화 성공")
+    @DisplayName("activateAccessCode - 코드 활성화 성공 (활성화 된 코드가 없는 경우)")
     fun activateAccessCode_success() {
         // given
         val requestDto = ActivateAccessCodeRequestDto(
@@ -94,12 +112,12 @@ class AccessCodeServiceTest {
             accessCode = testAccessCode
         )
         
-        // 코드 존재 가정
+        // AccessCode 존재 가정
         every { accessCodeRepository.findByAccessCode(testAccessCode) } returns accessCodeHistoryDto
         
-        // 유저코드가 존재하지 않는다고 가정
-        every { 
-            accessCodeRepository.findUserAccessCodeByUserIdAndStatus(testUserId, AccessCodeStatus.ACTIVE) 
+        // 활성화 된 코드가 없는 경우
+        every {
+            accessCodeRepository.findUserAccessCodeByUserIdAndStatus(testUserId, AccessCodeStatus.ACTIVE)
         } returns null
         
         // 저장 성공 가정
@@ -107,159 +125,155 @@ class AccessCodeServiceTest {
             firstArg<UserAccessCodeDto>().copy(id = 1L)
         }
         
-        // when & then - 예외가 발생하지 않아야 함
-        accessCodeService.activateAccessCode(requestDto)
-        
-        verify { accessCodeRepository.findByAccessCode(testAccessCode) }
-        verify { 
-            accessCodeRepository.findUserAccessCodeByUserIdAndStatus(testUserId, AccessCodeStatus.ACTIVE) 
-        }
-        verify { accessCodeRepository.saveUserAccessCode(any()) }
+        // when & then
+        val responseDto: ActivateAccessCodeResponseDto = accessCodeService.activateAccessCode(requestDto)
+
+        //응답 검증
+        responseDto.userId shouldBe testUserId
+        responseDto.accessCode shouldBe testAccessCode
+
+        //시간관련 검증
+        val expiresDate = responseDto.createdAt.plusDays(43).withHour(0).withMinute(0).withSecond(0).withNano(0)
+        responseDto.expiresAt shouldBe expiresDate
+
+
+        verify(exactly = 1) { accessCodeRepository.findByAccessCode(testAccessCode) }
+        verify(exactly = 1) { accessCodeRepository.findUserAccessCodeByUserIdAndStatus(testUserId, AccessCodeStatus.ACTIVE) }
+        verify(exactly = 1) { accessCodeRepository.saveUserAccessCode(any()) }
     }
     
     @Test
-    @DisplayName("activateAccessCode - 이미 활성화된 유저 코드가 있는 경우 예외 발생")
+    @DisplayName("activateAccessCode - 코드 비활성화 테스트 (활성화 된 코드의 만료일이 지났을 경우)")
+    fun activateAccessCode_alreadyActivated_Expired() {
+        // given expiredAt 이 1년 경과
+        val existingUserAccessCodeDto = UserAccessCodeDto(
+            id = 1L,
+            userId = testUserId,
+            accessCode = "EXISTING",
+            status = AccessCodeStatus.ACTIVE,
+            expiresAt = LocalDateTime.now().minusYears(1)
+        )
+
+        //when expiredAt 상태 변경
+        val expiredUserAccessCodeDto = existingUserAccessCodeDto.expire()
+
+        //then
+        expiredUserAccessCodeDto.isExpired() shouldBe true
+
+        expiredUserAccessCodeDto.status shouldBe AccessCodeStatus.EXPIRED
+
+    }
+
+    @Test
+    @DisplayName("activateAccessCode - 코드 활성화 실패 (유효하지 않은 access code)")
+    fun activateAccessCode_invalidAccessCode_throwsException() {
+        // given
+        val requestDto = ActivateAccessCodeRequestDto(
+            userId = testUserId,
+            accessCode = testAccessCode
+        )
+
+        // AccessCode 존재하지 않는 경우
+        every { accessCodeRepository.findByAccessCode(testAccessCode) } returns null
+
+        // when & then
+        val exception = shouldThrow<IllegalArgumentException> {
+            accessCodeService.activateAccessCode(requestDto)
+        }
+
+        exception.message shouldBe "Access code not found"
+
+        verify(exactly = 1) { accessCodeRepository.findByAccessCode(testAccessCode) }
+    }
+
+    @Test
+    @DisplayName("activateAccessCode - 코드 활성화 실패 (이미 활성화 된 코드가 있는 경우)")
     fun activateAccessCode_alreadyActivated_throwsException() {
         // given
         val requestDto = ActivateAccessCodeRequestDto(
             userId = testUserId,
             accessCode = testAccessCode
         )
-        
-        val accessCodeHistoryDto = AccessCodeHistoryDto(
-            id = 1L,
-            hospitalId = testHospitalId,
-            accessCode = testAccessCode
-        )
-        
-        val existingUserCodeDto = UserAccessCodeDto(
-            id = 1L,
-            userId = testUserId,
-            accessCode = "EXISTING",
-            status = AccessCodeStatus.ACTIVE,
-            expiresAt = LocalDateTime.now().plusDays(30)
-        )
-        
-        // 코드 존재 가정
-        every { accessCodeRepository.findByAccessCode(testAccessCode) } returns accessCodeHistoryDto
-        
-        // 이미 활성화된 유저코드가 있고, 만료되지 않았다고 가정
-        every { 
-            accessCodeRepository.findUserAccessCodeByUserIdAndStatus(testUserId, AccessCodeStatus.ACTIVE) 
-        } returns existingUserCodeDto
-        
-        every { existingUserCodeDto.isExpired() } returns false
-        
-        // when & then
-        val exception = shouldThrow<IllegalStateException> {
-            accessCodeService.activateAccessCode(requestDto)
-        }
-        
-        exception.message shouldBe "User already has active access code"
-        
-        verify { accessCodeRepository.findByAccessCode(testAccessCode) }
-        verify { 
-            accessCodeRepository.findUserAccessCodeByUserIdAndStatus(testUserId, AccessCodeStatus.ACTIVE) 
-        }
-    }
-    
-    @Test
-    @DisplayName("activateAccessCode - 만료된 유저 코드가 있는 경우 성공적으로 새 코드 활성화")
-    fun activateAccessCode_withExpiredCode_success() {
-        // given
-        val requestDto = ActivateAccessCodeRequestDto(
-            userId = testUserId,
-            accessCode = testAccessCode
-        )
-        
-        val accessCodeHistoryDto = AccessCodeHistoryDto(
-            id = 1L,
-            hospitalId = testHospitalId,
-            accessCode = testAccessCode
-        )
-        
-        val existingUserCodeDto = UserAccessCodeDto(
-            id = 1L,
-            userId = testUserId,
-            accessCode = "EXISTING",
-            status = AccessCodeStatus.ACTIVE,
-            expiresAt = LocalDateTime.now().minusDays(1) // 만료된 상태
-        )
-        
-        val expiredUserCodeDto = existingUserCodeDto.copy(status = AccessCodeStatus.EXPIRED)
-        
-        // 코드 존재 가정
-        every { accessCodeRepository.findByAccessCode(testAccessCode) } returns accessCodeHistoryDto
-        
-        // 만료된 유저코드가 있다고 가정
-        every { 
-            accessCodeRepository.findUserAccessCodeByUserIdAndStatus(testUserId, AccessCodeStatus.ACTIVE) 
-        } returns existingUserCodeDto
-        
-        every { existingUserCodeDto.isExpired() } returns true
-        every { existingUserCodeDto.expire() } returns expiredUserCodeDto
-        
-        // 저장 성공 가정
-        every { accessCodeRepository.saveUserAccessCode(any()) } answers {
-            firstArg<UserAccessCodeDto>().copy(id = if (firstArg<UserAccessCodeDto>().status == AccessCodeStatus.EXPIRED) 1L else 2L)
-        }
-        
-        // when
-        accessCodeService.activateAccessCode(requestDto)
-        
-        // then
-        verify { accessCodeRepository.findByAccessCode(testAccessCode) }
-        verify { 
-            accessCodeRepository.findUserAccessCodeByUserIdAndStatus(testUserId, AccessCodeStatus.ACTIVE) 
-        }
-        verify { existingUserCodeDto.isExpired() }
-        verify { existingUserCodeDto.expire() }
-        verify(exactly = 2) { accessCodeRepository.saveUserAccessCode(any()) }
-    }
-    
-    @Test
-    @DisplayName("isUserAccessCodeActivated - 유저 코드가 활성화되어 있는 경우 true 반환")
-    fun isUserAccessCodeActivated_withActiveCode_returnsTrue() {
-        // given
-        val userCodeDto = UserAccessCodeDto(
+
+        val existingUserAccessCodeDto = UserAccessCodeDto(
             id = 1L,
             userId = testUserId,
             accessCode = testAccessCode,
             status = AccessCodeStatus.ACTIVE,
-            expiresAt = LocalDateTime.now().plusDays(30)
+            activatedAt = LocalDateTime.now(),
+            expiresAt = LocalDateTime.now().plusDays(43)
         )
-        
-        every { 
-            accessCodeRepository.findUserAccessCodeByUserIdAndStatus(testUserId, AccessCodeStatus.ACTIVE) 
-        } returns userCodeDto
-        
+
+        val accessCodeHistoryDto = AccessCodeHistoryDto(
+            id = 1L,
+            hospitalId = testHospitalId,
+            accessCode = testAccessCode
+        )
+
+        // AccessCode 존재 가정
+        every { accessCodeRepository.findByAccessCode(testAccessCode) } returns accessCodeHistoryDto
+
+        // 활성화 된 코드가 있는 경우
+        every {
+            accessCodeRepository.findUserAccessCodeByUserIdAndStatus(testUserId, AccessCodeStatus.ACTIVE)
+        } returns existingUserAccessCodeDto
+
+        // when & then
+        val exception = shouldThrow<IllegalStateException> {
+            accessCodeService.activateAccessCode(requestDto)
+        }
+
+        exception.message shouldBe "User already has active access code"
+
+        verify(exactly = 1) { accessCodeRepository.findByAccessCode(testAccessCode) }
+        verify(exactly = 1) { accessCodeRepository.findUserAccessCodeByUserIdAndStatus(testUserId, AccessCodeStatus.ACTIVE) }
+    }
+
+    @Test
+    @DisplayName("isUserAccessCodeActivated - 성공 (활성화 된 코드가 있는 경우)")
+    fun isUserAccessCodeActivated_success_true() {
+        // given
+        val existingUserAccessCodeDto = UserAccessCodeDto(
+            id = 1L,
+            userId = testUserId,
+            accessCode = testAccessCode,
+            status = AccessCodeStatus.ACTIVE,
+            activatedAt = LocalDateTime.now(),
+            expiresAt = LocalDateTime.now().plusDays(43)
+        )
+
+        // 활성화 된 코드가 있는 경우
+        every {
+            accessCodeRepository.findUserAccessCodeByUserIdAndStatus(testUserId, AccessCodeStatus.ACTIVE)
+        } returns existingUserAccessCodeDto
+
         // when
-        val result = accessCodeService.isUserAccessCodeActivated(testUserId)
-        
+        val result: Boolean = accessCodeService.isUserAccessCodeActivated(testUserId)
+
         // then
         result shouldBe true
-        
-        verify { 
-            accessCodeRepository.findUserAccessCodeByUserIdAndStatus(testUserId, AccessCodeStatus.ACTIVE) 
-        }
+
+        verify(exactly = 1) { accessCodeRepository.findUserAccessCodeByUserIdAndStatus(testUserId, AccessCodeStatus.ACTIVE) }
     }
-    
+
     @Test
-    @DisplayName("isUserAccessCodeActivated - 유저 코드가 없는 경우 false 반환")
-    fun isUserAccessCodeActivated_withNoCode_returnsFalse() {
-        // given
-        every { 
-            accessCodeRepository.findUserAccessCodeByUserIdAndStatus(testUserId, AccessCodeStatus.ACTIVE) 
+    @DisplayName("isUserAccessCodeActivated - 성공 (활성화 된 코드가 없는 경우)")
+    fun isUserAccessCodeActivated_success_false() {
+        // 활성화 된 코드가 없는 경우
+        every {
+            accessCodeRepository.findUserAccessCodeByUserIdAndStatus(testUserId, AccessCodeStatus.ACTIVE)
         } returns null
-        
+
         // when
-        val result = accessCodeService.isUserAccessCodeActivated(testUserId)
-        
+        val result: Boolean = accessCodeService.isUserAccessCodeActivated(testUserId)
+
         // then
         result shouldBe false
-        
-        verify { 
-            accessCodeRepository.findUserAccessCodeByUserIdAndStatus(testUserId, AccessCodeStatus.ACTIVE) 
-        }
+
+        verify(exactly = 1) { accessCodeRepository.findUserAccessCodeByUserIdAndStatus(testUserId, AccessCodeStatus.ACTIVE) }
     }
-}*/
+
+
+
+
+}

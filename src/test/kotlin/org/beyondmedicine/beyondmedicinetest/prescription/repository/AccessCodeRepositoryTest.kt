@@ -42,7 +42,7 @@ class AccessCodeRepositoryTest {
     }
 
     @Test
-    @DisplayName("AccessCodeHistory 를 저장 할 수 있다.")
+    @DisplayName("AccessCodeHistory 저장 성공")
     fun saveAccessCodeHistory() {
         // given
         val accessCodeHistoryDto = AccessCodeHistoryDto.create(
@@ -61,7 +61,7 @@ class AccessCodeRepositoryTest {
     }
 
     @Test
-    @DisplayName("AccessCodeHistory 를 조회 할 수 있다.")
+    @DisplayName("AccessCodeHistory 조회 성공")
     fun findAccessCodeHistory() {
 
         //given
@@ -85,7 +85,7 @@ class AccessCodeRepositoryTest {
 
 
     @Test
-    @DisplayName("AccessCode 가 저장되어 있는지 확인 할 수 있다.")
+    @DisplayName("AccessCode 가 존재하는지 유무 파악 성공")
     fun existsByAccessCode() {
         // given
         val accessCodeHistoryDto = AccessCodeHistoryDto.create(
@@ -102,7 +102,7 @@ class AccessCodeRepositoryTest {
     }
 
     @Test
-    @DisplayName("UserAccessCode 를 저장 할 수 있다.")
+    @DisplayName("UserAccessCode 저장 성공")
     fun saveUserAccessCode() {
         // given
         val userAccessCodeDto = UserAccessCodeDto(
@@ -123,8 +123,8 @@ class AccessCodeRepositoryTest {
     }
 
     @Test
-    @DisplayName("UserAccessCode 의 활성화된 코드를 찾을 수 있다.")
-    fun updateUserAccessCodeStatus() {
+    @DisplayName("UserAccessCode 에서 활성화 코드 조회 성공")
+    fun findUserAccessCodeStatus() {
         // given
         val userAccessCode = UserAccessCodeDto.activateAccessCode(testUserId, testAccessCode)
 
@@ -147,5 +147,21 @@ class AccessCodeRepositoryTest {
             .withNano(0)
 
         savedUserAccessCode.expiresAt shouldBe testExpires
+    }
+
+    @Test
+    @DisplayName("UserAccessCode 에서 활성화 코드 조회 - 활성화 코드가 없는 경우")
+    fun findUserAccessCodeStatusFail() {
+        // given
+        val userAccessCode = UserAccessCodeDto.activateAccessCode(testUserId, testAccessCode)
+
+        // when
+        accessCodeRepository.saveUserAccessCode(userAccessCode)
+
+        val savedUserAccessCode: UserAccessCodeDto? = accessCodeRepository.findUserAccessCodeByUserIdAndStatus("12133", AccessCodeStatus.ACTIVE)
+
+        // then
+        savedUserAccessCode shouldBe null
+
     }
 }
