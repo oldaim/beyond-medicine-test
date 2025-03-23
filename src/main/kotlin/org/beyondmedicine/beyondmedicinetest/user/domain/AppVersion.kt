@@ -11,17 +11,17 @@ class AppVersion (
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
 
-    @Column(nullable = false)
-    val os: String,
-
-    @Column(nullable = false)
-    val mode: String,
-
-    @Column(name = "latest_version", nullable = false)
+    @Column(name = "latest_version", nullable = false, length = 30)
     val latestVersion: String,
 
-    @Column(name = "minimum_version", nullable = false)
+    @Column(name = "minimum_version", nullable = false, length = 30)
     val minimumVersion: String,
+
+    @Column(nullable = false, length = 20)
+    val os: String,
+
+    @Column(nullable = false, length = 10)
+    val mode: String,
 
     @Column(nullable = false)
     val hash: String

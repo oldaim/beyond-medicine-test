@@ -31,5 +31,15 @@ data class ApiResponse<T>(
 
             return ApiResponse(code, message)
         }
+
+        fun <T> upgradeRequired(data: T? = null): ApiResponse<T> {
+
+            val code: Int = HttpStatus.UPGRADE_REQUIRED.value()
+
+            val message: String = HttpStatus.UPGRADE_REQUIRED.reasonPhrase
+
+            return ApiResponse(code, message, data)
+        }
+
     }
 }

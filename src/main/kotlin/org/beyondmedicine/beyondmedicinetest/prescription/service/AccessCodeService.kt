@@ -10,4 +10,6 @@ interface AccessCodeService {
 
     fun activateAccessCode(requestDto: ActivateAccessCodeRequestDto)
 
+    fun isUserAccessCodeActivated(userId: String): Boolean
+
 }

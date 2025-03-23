@@ -23,6 +23,13 @@ data class UserVerificationRequestDto(
 
 ){
 
+    companion object{
+        fun create(userId: String, version: String, os: String, mode: String, hash: String): UserVerificationRequestDto {
+            return UserVerificationRequestDto(userId, version, os, mode, hash)
+        }
+    }
+
+
     fun isDtoValid(): Boolean {
 
         val version: String = this.version
