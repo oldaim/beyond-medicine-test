@@ -1,14 +1,14 @@
-package org.beyondmedicine.beyondmedicinetest.service.accesscode
+package org.beyondmedicine.beyondmedicinetest.prescription.service
 
 
-import org.beyondmedicine.beyondmedicinetest.domain.accesscode.AccessCodeHistory
-import org.beyondmedicine.beyondmedicinetest.domain.accesscode.UserAccessCode
-import org.beyondmedicine.beyondmedicinetest.domain.constant.AccessCodeStatus
-import org.beyondmedicine.beyondmedicinetest.dto.ActivateAccessCodeRequestDto
-import org.beyondmedicine.beyondmedicinetest.dto.CreateAccessCodeRequestDto
-import org.beyondmedicine.beyondmedicinetest.dto.CreateAccessCodeResponseDto
-import org.beyondmedicine.beyondmedicinetest.repository.accesscode.AccessCodeHistoryRepository
-import org.beyondmedicine.beyondmedicinetest.repository.accesscode.UserAccessCodeRepository
+import org.beyondmedicine.beyondmedicinetest.prescription.domain.AccessCodeHistory
+import org.beyondmedicine.beyondmedicinetest.prescription.domain.UserAccessCode
+import org.beyondmedicine.beyondmedicinetest.prescription.domain.constant.AccessCodeStatus
+import org.beyondmedicine.beyondmedicinetest.prescription.dto.ActivateAccessCodeRequestDto
+import org.beyondmedicine.beyondmedicinetest.prescription.dto.CreateAccessCodeRequestDto
+import org.beyondmedicine.beyondmedicinetest.prescription.dto.CreateAccessCodeResponseDto
+import org.beyondmedicine.beyondmedicinetest.prescription.repository.AccessCodeHistoryRepository
+import org.beyondmedicine.beyondmedicinetest.prescription.repository.UserAccessCodeRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.security.SecureRandom
@@ -56,7 +56,7 @@ class AccessCodeServiceImpl(
         
         validateAccessCode(accessCode)
 
-        val existingUserAccessCode: UserAccessCode? = userAccessCodeRepository.findByUserIdAndStatus(userId, AccessCodeStatus.ACTIVE)
+        val existingUserAccessCode: UserAccessCode? = getExistingUserAccessCode(userId)
         
         if (existingUserAccessCode != null) {
 
@@ -76,9 +76,20 @@ class AccessCodeServiceImpl(
 
     }
 
+    @Transactional
+    override fun isUserAccessCodeActivated(userId: String): Boolean {
+
+        val existingUserAccessCode: UserAccessCode? = getExistingUserAccessCode(userId)
+
+        return existingUserAccessCode != null
+    }
+
+    private fun getExistingUserAccessCode(userId: String) =
+        userAccessCodeRepository.findByUserIdAndStatus(userId, AccessCodeStatus.ACTIVE)
+
     private fun createAndSaveUserAccessCode(userId: String, accessCode: String) {
 
-        val userAccessCode = UserAccessCode.activateAccessCode(userId, accessCode)
+        val userAccessCode: UserAccessCode = UserAccessCode.activateAccessCode(userId, accessCode)
 
         userAccessCodeRepository.save(userAccessCode)
     }
@@ -93,7 +104,7 @@ class AccessCodeServiceImpl(
 
         while (attempt < maxAttempt) {
 
-            val accessCode = generateRandomAccessCode()
+            val accessCode: String = generateRandomAccessCode()
 
             if (!accessCodeRepository.existsByAccessCode(accessCode)) {
                 return accessCode
@@ -116,12 +127,13 @@ class AccessCodeServiceImpl(
         val random = Random(randomSeed)
 
         // 4자리 문자열 생성
-        val letters = (1..4).map { ('A' .. 'Z').random(random) }.joinToString { "" }
+        val letters: String = (1..4).map { ('A' .. 'Z').random(random) }.joinToString { "" }
         // 4자리 숫자열 생성
-        val numbers = (1..4).map { ('0' .. '9').random(random) }.joinToString { "" }
+        val numbers: String = (1..4).map { ('0' .. '9').random(random) }.joinToString { "" }
 
         // 조합 후 섞기
-        val combined = (letters + numbers).toCharArray()
+        val combined: CharArray = ("$letters$numbers").toCharArray()
+
         combined.shuffle(random)
 
         return String(combined)

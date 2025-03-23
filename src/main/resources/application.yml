@@ -13,3 +13,7 @@ spring:
     hibernate:
       ddl-auto: create-drop
     show-sql: true
+
+verification:
+  hash:
+    secret: b3y0ndM3d1c1n3_S3cur3_K3y_2025

@@ -1,10 +1,10 @@
-package org.beyondmedicine.beyondmedicinetest.controller
+package org.beyondmedicine.beyondmedicinetest.prescription.controller
 
-import org.beyondmedicine.beyondmedicinetest.dto.ActivateAccessCodeRequestDto
-import org.beyondmedicine.beyondmedicinetest.dto.CreateAccessCodeRequestDto
-import org.beyondmedicine.beyondmedicinetest.dto.CreateAccessCodeResponseDto
-import org.beyondmedicine.beyondmedicinetest.dto.ApiResponse
-import org.beyondmedicine.beyondmedicinetest.service.accesscode.AccessCodeService
+import org.beyondmedicine.beyondmedicinetest.prescription.dto.ActivateAccessCodeRequestDto
+import org.beyondmedicine.beyondmedicinetest.prescription.dto.CreateAccessCodeRequestDto
+import org.beyondmedicine.beyondmedicinetest.prescription.dto.CreateAccessCodeResponseDto
+import org.beyondmedicine.beyondmedicinetest.common.dto.ApiResponse
+import org.beyondmedicine.beyondmedicinetest.prescription.service.AccessCodeService
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping

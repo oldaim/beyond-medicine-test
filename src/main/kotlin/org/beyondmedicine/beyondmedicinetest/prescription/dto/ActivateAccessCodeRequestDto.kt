@@ -1,4 +1,4 @@
-package org.beyondmedicine.beyondmedicinetest.dto
+package org.beyondmedicine.beyondmedicinetest.prescription.dto
 
 import jakarta.validation.constraints.NotBlank
 import org.hibernate.validator.constraints.Length
