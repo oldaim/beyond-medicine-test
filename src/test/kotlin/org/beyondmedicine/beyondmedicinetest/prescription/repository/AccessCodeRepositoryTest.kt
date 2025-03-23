@@ -1,11 +1,8 @@
 package org.beyondmedicine.beyondmedicinetest.prescription.repository
 
-import io.kotest.matchers.date.shouldBeAfter
-import io.kotest.matchers.equals.shouldBeEqual
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import org.beyondmedicine.beyondmedicinetest.config.JpaRepositoryTest
-import org.beyondmedicine.beyondmedicinetest.prescription.domain.UserAccessCode
 import org.beyondmedicine.beyondmedicinetest.prescription.domain.constant.AccessCodeStatus
 import org.beyondmedicine.beyondmedicinetest.prescription.dto.AccessCodeHistoryDto
 import org.beyondmedicine.beyondmedicinetest.prescription.dto.UserAccessCodeDto

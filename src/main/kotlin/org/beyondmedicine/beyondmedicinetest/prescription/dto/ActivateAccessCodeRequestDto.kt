@@ -1,7 +1,5 @@
 package org.beyondmedicine.beyondmedicinetest.prescription.dto
 
-import jakarta.validation.constraints.NotBlank
-import org.beyondmedicine.beyondmedicinetest.prescription.domain.constant.AccessCodeStatus
 import org.hibernate.validator.constraints.Length
 import org.hibernate.validator.constraints.UUID
 import java.time.LocalDateTime

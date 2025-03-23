@@ -1,6 +1,5 @@
 package org.beyondmedicine.beyondmedicinetest.prescription.controller
 
-import jakarta.validation.Valid
 import org.beyondmedicine.beyondmedicinetest.common.dto.ApiResponse
 import org.beyondmedicine.beyondmedicinetest.prescription.dto.ActivateAccessCodeRequestDto
 import org.beyondmedicine.beyondmedicinetest.prescription.dto.ActivateAccessCodeResponseDto

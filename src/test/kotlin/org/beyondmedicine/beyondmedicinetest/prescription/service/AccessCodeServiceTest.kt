@@ -2,14 +2,10 @@ package org.beyondmedicine.beyondmedicinetest.prescription.service
 
 import com.ninjasquad.springmockk.MockkBean
 import io.kotest.assertions.throwables.shouldThrow
-import io.kotest.matchers.collections.shouldBeIn
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import io.mockk.every
-import io.mockk.just
-import io.mockk.runs
 import io.mockk.verify
-import org.beyondmedicine.beyondmedicinetest.config.ServiceTest
 import org.beyondmedicine.beyondmedicinetest.prescription.domain.constant.AccessCodeStatus
 import org.beyondmedicine.beyondmedicinetest.prescription.dto.*
 import org.beyondmedicine.beyondmedicinetest.prescription.repository.AccessCodeRepository
@@ -17,7 +13,6 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.junit.jupiter.SpringExtension
