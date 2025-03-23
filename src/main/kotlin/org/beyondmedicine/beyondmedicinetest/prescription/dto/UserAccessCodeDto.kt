@@ -15,17 +15,6 @@ data class UserAccessCodeDto(
     companion object {
         private const val EXPIRE_DAYS = 43L
         
-        fun fromEntity(entity: UserAccessCode): UserAccessCodeDto {
-            return UserAccessCodeDto(
-                id = entity.id,
-                userId = entity.userId,
-                accessCode = entity.accessCode,
-                status = entity.status,
-                activatedAt = entity.activatedAt,
-                expiresAt = entity.expiresAt
-            )
-        }
-        
         fun activateAccessCode(userId: String, accessCode: String): UserAccessCodeDto {
             val activatedDate = LocalDateTime.now()
             // 활성화 시점으로부터 6주 후 자정에 만료
@@ -43,17 +32,6 @@ data class UserAccessCodeDto(
                 expiresAt = expirationDate
             )
         }
-    }
-    
-    fun toEntity(): UserAccessCode {
-        return UserAccessCode(
-            id = this.id,
-            userId = this.userId,
-            accessCode = this.accessCode,
-            status = this.status,
-            activatedAt = this.activatedAt,
-            expiresAt = this.expiresAt
-        )
     }
     
     fun isExpired(): Boolean {
