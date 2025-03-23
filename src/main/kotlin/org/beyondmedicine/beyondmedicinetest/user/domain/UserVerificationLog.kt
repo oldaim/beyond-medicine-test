@@ -13,7 +13,7 @@ class UserVerificationLog (
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
 
-    @Column(nullable = false, length = 36)
+    @Column(nullable = false, length = 32)
     val userId: String,
 
     @Column(nullable = false, length = 30)

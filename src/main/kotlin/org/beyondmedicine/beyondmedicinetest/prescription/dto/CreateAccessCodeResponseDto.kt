@@ -1,6 +1,5 @@
 package org.beyondmedicine.beyondmedicinetest.prescription.dto
 
-import org.beyondmedicine.beyondmedicinetest.prescription.domain.AccessCodeHistory
 import java.time.LocalDateTime
 
 // 처방코드 생성 응답 DTO

@@ -1,10 +1,12 @@
 package org.beyondmedicine.beyondmedicinetest.prescription.controller
 
+import org.beyondmedicine.beyondmedicinetest.common.dto.ApiResponse
 import org.beyondmedicine.beyondmedicinetest.prescription.dto.ActivateAccessCodeRequestDto
+import org.beyondmedicine.beyondmedicinetest.prescription.dto.ActivateAccessCodeResponseDto
 import org.beyondmedicine.beyondmedicinetest.prescription.dto.CreateAccessCodeRequestDto
 import org.beyondmedicine.beyondmedicinetest.prescription.dto.CreateAccessCodeResponseDto
-import org.beyondmedicine.beyondmedicinetest.common.dto.ApiResponse
 import org.beyondmedicine.beyondmedicinetest.prescription.service.AccessCodeService
+import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -18,7 +20,7 @@ class AccessCodeController(
 
     @PostMapping("/access-code")
     fun createAccessCode(
-        @RequestBody requestDto: CreateAccessCodeRequestDto
+        @Validated @RequestBody requestDto: CreateAccessCodeRequestDto
     ): ApiResponse<CreateAccessCodeResponseDto> {
 
         val result: CreateAccessCodeResponseDto = accessCodeService.createAccessCodeHistory(requestDto)
@@ -28,11 +30,11 @@ class AccessCodeController(
 
     @PostMapping("/access-code-activations")
     fun activateAccessCode(
-        @RequestBody requestDto: ActivateAccessCodeRequestDto
-    ): ApiResponse<CreateAccessCodeResponseDto> {
+        @Validated @RequestBody requestDto: ActivateAccessCodeRequestDto
+    ): ApiResponse<ActivateAccessCodeResponseDto> {
 
-        accessCodeService.activateAccessCode(requestDto)
+        val result: ActivateAccessCodeResponseDto = accessCodeService.activateAccessCode(requestDto)
 
-        return ApiResponse.ok()
+        return ApiResponse.ok(result)
     }
 }

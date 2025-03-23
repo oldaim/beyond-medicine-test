@@ -12,30 +12,35 @@ class AccessCodeRepositoryImpl(
     private val accessCodeHistoryRepository: AccessCodeHistoryRepository,
     private val userAccessCodeRepository: UserAccessCodeRepository
 ) : AccessCodeRepository {
-    
+
+    // AccessCodeHistory 저장
     override fun saveAccessCodeHistory(accessCodeHistoryDto: AccessCodeHistoryDto): AccessCodeHistoryDto {
         val entity = AccessCodeHistory.fromDto(accessCodeHistoryDto)
-        val savedEntity = accessCodeHistoryRepository.save(entity)
+        val savedEntity: AccessCodeHistory = accessCodeHistoryRepository.save(entity)
         return savedEntity.toDto()
     }
-    
+
+    //AccessCode 로 존재 유무 파악
     override fun existsByAccessCode(accessCode: String): Boolean {
         return accessCodeHistoryRepository.existsByAccessCode(accessCode)
     }
-    
+
+    // AccessCode 로 AccessCodeHistory 조회
     override fun findByAccessCode(accessCode: String): AccessCodeHistoryDto? {
-        val entity = accessCodeHistoryRepository.findByAccessCode(accessCode)
+        val entity: AccessCodeHistory? = accessCodeHistoryRepository.findByAccessCode(accessCode)
         return entity?.toDto()
     }
-    
+
+    // userId 와 status 로 UserAccessCode 조회
     override fun findUserAccessCodeByUserIdAndStatus(userId: String, status: AccessCodeStatus): UserAccessCodeDto? {
-        val entity = userAccessCodeRepository.findByUserIdAndStatus(userId, status)
+        val entity: UserAccessCode? = userAccessCodeRepository.findByUserIdAndStatus(userId, status)
         return entity?.toDto()
     }
-    
+
+    // UserAccessCode 저장
     override fun saveUserAccessCode(userAccessCodeDto: UserAccessCodeDto): UserAccessCodeDto {
         val entity = UserAccessCode.fromDto(userAccessCodeDto)
-        val savedEntity = userAccessCodeRepository.save(entity)
+        val savedEntity: UserAccessCode = userAccessCodeRepository.save(entity)
         return savedEntity.toDto()
     }
 }
