@@ -12,7 +12,7 @@ class AccessCodeHistory(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 100)
     val hospitalId: String,
 
     @Column(nullable = false, length = 8, unique = true)
