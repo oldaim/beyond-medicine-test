@@ -1,4 +1,4 @@
-package org.beyondmedicine.beyondmedicinetest.prescription.repository.custom
+package org.beyondmedicine.beyondmedicinetest.prescription.repository
 
 import org.beyondmedicine.beyondmedicinetest.prescription.domain.constant.AccessCodeStatus
 import org.beyondmedicine.beyondmedicinetest.prescription.dto.AccessCodeHistoryDto

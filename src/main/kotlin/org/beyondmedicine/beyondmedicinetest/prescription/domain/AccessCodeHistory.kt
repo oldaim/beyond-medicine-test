@@ -2,7 +2,6 @@ package org.beyondmedicine.beyondmedicinetest.prescription.domain
 
 import jakarta.persistence.*
 import org.beyondmedicine.beyondmedicinetest.prescription.dto.AccessCodeHistoryDto
-import org.beyondmedicine.beyondmedicinetest.prescription.dto.CreateAccessCodeResponseDto
 import org.hibernate.annotations.CreationTimestamp
 import java.time.LocalDateTime
 
@@ -25,13 +24,6 @@ class AccessCodeHistory(
 ) {
 
     companion object {
-        // 새로운 처방코드 생성 팩터리 메서드
-        fun createNewAccessCodeHistory(hospitalId: String, accessCode: String): AccessCodeHistory {
-            return AccessCodeHistory(
-                hospitalId = hospitalId,
-                accessCode = accessCode
-            )
-        }
         
         fun fromDto(dto: AccessCodeHistoryDto): AccessCodeHistory {
             return AccessCodeHistory(
@@ -41,27 +33,12 @@ class AccessCodeHistory(
                 createdAt = dto.createdAt
             )
         }
-
-        fun toResponseDto(entity: AccessCodeHistory): CreateAccessCodeResponseDto {
-            return CreateAccessCodeResponseDto.fromEntity(entity)
-        }
-
-        fun toInfoDto(entity: AccessCodeHistory): AccessCodeHistoryDto {
-            return AccessCodeHistoryDto.fromEntity(entity)
-        }
     }
     
     fun toDto(): AccessCodeHistoryDto {
         return AccessCodeHistoryDto(
             id = this.id,
             hospitalId = this.hospitalId,
-            accessCode = this.accessCode,
-            createdAt = this.createdAt
-        )
-    }
-    
-    fun toResponseDto(): CreateAccessCodeResponseDto {
-        return CreateAccessCodeResponseDto(
             accessCode = this.accessCode,
             createdAt = this.createdAt
         )

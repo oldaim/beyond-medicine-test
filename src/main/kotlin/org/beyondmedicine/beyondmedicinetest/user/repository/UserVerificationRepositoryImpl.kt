@@ -1,10 +1,8 @@
-package org.beyondmedicine.beyondmedicinetest.user.repository.custom
+package org.beyondmedicine.beyondmedicinetest.user.repository
 
 import org.beyondmedicine.beyondmedicinetest.user.domain.UserVerificationLog
 import org.beyondmedicine.beyondmedicinetest.user.dto.AppVersionDto
 import org.beyondmedicine.beyondmedicinetest.user.dto.UserVerificationLogDto
-import org.beyondmedicine.beyondmedicinetest.user.repository.AppVersionRepository
-import org.beyondmedicine.beyondmedicinetest.user.repository.UserVerificationLogRepository
 import org.springframework.stereotype.Repository
 
 @Repository

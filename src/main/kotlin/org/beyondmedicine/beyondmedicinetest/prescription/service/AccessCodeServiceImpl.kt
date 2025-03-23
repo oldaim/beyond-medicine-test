@@ -2,7 +2,7 @@ package org.beyondmedicine.beyondmedicinetest.prescription.service
 
 import org.beyondmedicine.beyondmedicinetest.prescription.domain.constant.AccessCodeStatus
 import org.beyondmedicine.beyondmedicinetest.prescription.dto.*
-import org.beyondmedicine.beyondmedicinetest.prescription.repository.custom.AccessCodeRepository
+import org.beyondmedicine.beyondmedicinetest.prescription.repository.AccessCodeRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.security.SecureRandom
@@ -17,6 +17,7 @@ class AccessCodeServiceImpl(
     // 처방코드 생성 로직
     @Transactional
     override fun createAccessCodeHistory(requestDto: CreateAccessCodeRequestDto): CreateAccessCodeResponseDto {
+
         val hospitalId: String = requestDto.hospitalId
         // 처방코드 생성
         val accessCode: String = generateNewAccessCode()
@@ -28,10 +29,7 @@ class AccessCodeServiceImpl(
 
         val result: AccessCodeHistoryDto = accessCodeRepository.saveAccessCodeHistory(accessCodeHistoryDto)
 
-        return CreateAccessCodeResponseDto(
-            accessCode = result.accessCode,
-            createdAt = result.createdAt
-        )
+        return CreateAccessCodeResponseDto.create(result.accessCode, result.createdAt)
     }
 
     @Transactional
@@ -55,7 +53,7 @@ class AccessCodeServiceImpl(
         
         if (existingUserAccessCodeDto != null) {
             if (existingUserAccessCodeDto.isExpired()) {
-                val expiredDto = existingUserAccessCodeDto.expire()
+                val expiredDto: UserAccessCodeDto = existingUserAccessCodeDto.expire()
                 accessCodeRepository.saveUserAccessCode(expiredDto)
                 createAndSaveUserAccessCode(userId, accessCode)
             } else {

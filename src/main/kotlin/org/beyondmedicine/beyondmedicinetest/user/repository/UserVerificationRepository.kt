@@ -1,4 +1,4 @@
-package org.beyondmedicine.beyondmedicinetest.user.repository.custom
+package org.beyondmedicine.beyondmedicinetest.user.repository
 
 import org.beyondmedicine.beyondmedicinetest.user.dto.AppVersionDto
 import org.beyondmedicine.beyondmedicinetest.user.dto.UserVerificationLogDto

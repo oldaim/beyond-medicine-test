@@ -1,12 +1,10 @@
-package org.beyondmedicine.beyondmedicinetest.prescription.repository.custom
+package org.beyondmedicine.beyondmedicinetest.prescription.repository
 
 import org.beyondmedicine.beyondmedicinetest.prescription.domain.AccessCodeHistory
 import org.beyondmedicine.beyondmedicinetest.prescription.domain.UserAccessCode
 import org.beyondmedicine.beyondmedicinetest.prescription.domain.constant.AccessCodeStatus
 import org.beyondmedicine.beyondmedicinetest.prescription.dto.AccessCodeHistoryDto
 import org.beyondmedicine.beyondmedicinetest.prescription.dto.UserAccessCodeDto
-import org.beyondmedicine.beyondmedicinetest.prescription.repository.AccessCodeHistoryRepository
-import org.beyondmedicine.beyondmedicinetest.prescription.repository.UserAccessCodeRepository
 import org.springframework.stereotype.Repository
 
 @Repository

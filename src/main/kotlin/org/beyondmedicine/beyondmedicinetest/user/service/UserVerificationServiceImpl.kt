@@ -5,7 +5,7 @@ import org.beyondmedicine.beyondmedicinetest.user.constants.UpdateStatus
 import org.beyondmedicine.beyondmedicinetest.user.dto.AppVersionDto
 import org.beyondmedicine.beyondmedicinetest.user.dto.UserVerificationLogDto
 import org.beyondmedicine.beyondmedicinetest.user.dto.UserVerificationRequestDto
-import org.beyondmedicine.beyondmedicinetest.user.repository.custom.UserVerificationRepository
+import org.beyondmedicine.beyondmedicinetest.user.repository.UserVerificationRepository
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import java.security.MessageDigest

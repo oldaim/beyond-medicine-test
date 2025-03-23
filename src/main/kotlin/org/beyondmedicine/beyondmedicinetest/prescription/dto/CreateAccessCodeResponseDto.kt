@@ -9,10 +9,11 @@ data class CreateAccessCodeResponseDto(
     val createdAt: LocalDateTime,
 ) {
     companion object {
-        fun fromEntity(entity: AccessCodeHistory): CreateAccessCodeResponseDto {
+
+        fun create(accessCode: String, createdAt: LocalDateTime): CreateAccessCodeResponseDto {
             return CreateAccessCodeResponseDto(
-                accessCode = entity.accessCode,
-                createdAt = entity.createdAt
+                accessCode = accessCode,
+                createdAt = createdAt
             )
         }
     }
