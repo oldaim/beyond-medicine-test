@@ -27,6 +27,9 @@ dependencies {
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	runtimeOnly("com.mysql:mysql-connector-j:8.2.0")
 	
+	// Swagger 관련 의존성
+	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.4.0")
+	
 	// 테스트 라이브러리
 	testImplementation("org.springframework.boot:spring-boot-starter-test") {
 		exclude(module = "mockito-core") // Mockito 대신 MockK 사용

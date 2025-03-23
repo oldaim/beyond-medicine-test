@@ -14,6 +14,18 @@ spring:
       ddl-auto: create-drop
     show-sql: true
 
+# Swagger 설정
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+  api-docs:
+    path: /api-docs
+  show-actuator: true
+  default-consumes-media-type: application/json
+  default-produces-media-type: application/json
+
 verification:
   hash:
     secret: b3y0ndM3d1c1n3_S3cur3_K3y_2025
