@@ -8,6 +8,7 @@ import org.beyondmedicine.beyondmedicinetest.user.dto.UserVerificationRequestDto
 import org.beyondmedicine.beyondmedicinetest.user.repository.UserVerificationRepository
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.security.MessageDigest
 import java.util.*
 
@@ -20,42 +21,44 @@ class UserVerificationServiceImpl(
     private val messageDigest: MessageDigest
 ) : UserVerificationService {
 
+    @Transactional(readOnly = true)
     override fun verifyUserRequest(requestDto: UserVerificationRequestDto): UpdateStatus {
-        try {
-            if (!requestDto.isDtoValid()) throw IllegalArgumentException("dto parameters are not valid")
 
-            val os: String = requestDto.os
-            val mode: String = requestDto.mode
-            val userId: String = requestDto.userId
-            val version = requestDto.version
+        if (!requestDto.isDtoValid()) throw IllegalArgumentException("dto parameters are not valid")
 
-            val appVersionDto: AppVersionDto = findAppVersion(requestDto.os, requestDto.mode)
+        val os: String = requestDto.os
+        val mode: String = requestDto.mode
+        val userId: String = requestDto.userId
+        val version = requestDto.version
 
-            // hash 검증 과정
-            val isHashMatched: Boolean = validateHash(requestHash = requestDto.hash, entityHash = appVersionDto.hash, os = os, mode = mode)
+        val appVersionDto: AppVersionDto = findAppVersion(requestDto.os, requestDto.mode)
 
-            if (!isHashMatched) throw IllegalArgumentException("hash is not matched")
+        // hash 검증 과정
+        val isHashMatched: Boolean = validateHash(requestHash = requestDto.hash, entityHash = appVersionDto.hash, os = os, mode = mode)
 
-            // 사용자 검증 과정
-            if (!accessCodeService.isUserAccessCodeActivated(userId)) throw IllegalArgumentException("user access code is not activated")
+        if (!isHashMatched) throw IllegalArgumentException("hash is not matched")
 
-            // 버전 검증 과정
-            return validateVersion(version, appVersionDto.latestVersion, appVersionDto.minimumVersion)
+        // 사용자 검증 과정
+        if (!accessCodeService.isUserAccessCodeActivated(userId)) throw IllegalArgumentException("user access code is not activated")
 
-        } catch (e: IllegalArgumentException) {
-            throw e
-        } finally {
-            //exception 발생 여부와 상관없이 로그 저장
-            val userVerificationLogDto = UserVerificationLogDto.create(
-                userId = requestDto.userId,
-                version = requestDto.os,
-                os = requestDto.mode,
-                mode = requestDto.version,
-                hash = requestDto.hash
-            )
+        // 버전 검증 과정
+        return validateVersion(version, appVersionDto.latestVersion, appVersionDto.minimumVersion)
 
-            userVerificationRepository.saveUserVerificationLog(userVerificationLogDto)
-        }
+    }
+
+    @Transactional
+    override fun saveUserVerificationLog(requestDto: UserVerificationRequestDto) {
+
+       val userVerificationLogDto = UserVerificationLogDto.create(
+            userId = requestDto.userId,
+            version = requestDto.os,
+            os = requestDto.mode,
+            mode = requestDto.version,
+            hash = requestDto.hash
+        )
+
+        userVerificationRepository.saveUserVerificationLog(userVerificationLogDto)
+
     }
 
     private fun validateVersion(version: String, latestVersion: String, minimumVersion: String): UpdateStatus {
@@ -134,7 +137,7 @@ class UserVerificationServiceImpl(
     ): Boolean {
         val hashString: String = getHashString(os, mode)
 
-        return hashString != requestHash || hashString != entityHash
+        return hashString == requestHash && hashString == entityHash
     }
 
     // os와 mode로 생성한 hash를 반환
@@ -147,6 +150,6 @@ class UserVerificationServiceImpl(
     // os와 mode에 해당하는 AppVersion을 찾아서 AppVersionDto로 변환
     private fun findAppVersion(os: String, mode: String): AppVersionDto {
         return userVerificationRepository.findAppVersionByOsAndMode(os, mode)
-            ?: throw IllegalArgumentException("os and mode not found")
+            ?: throw IllegalArgumentException("os and mode not found or database error")
     }
 }

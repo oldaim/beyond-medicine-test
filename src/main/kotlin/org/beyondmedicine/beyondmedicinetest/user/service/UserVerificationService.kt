@@ -7,4 +7,6 @@ interface UserVerificationService {
 
     fun verifyUserRequest(requestDto: UserVerificationRequestDto): UpdateStatus
 
+    fun saveUserVerificationLog(requestDto: UserVerificationRequestDto)
+
 }

@@ -33,6 +33,8 @@ class UserVerificationController(
             hash = hash
         )
 
+        userVerificationService.saveUserVerificationLog(requestDto) // 사용자 검증과 상관 없이 로그 저장
+
         return when(val result: UpdateStatus = userVerificationService.verifyUserRequest(requestDto)) {
             UpdateStatus.FORCE_UPDATE_REQUIRED -> ApiResponse.upgradeRequired(result)
             UpdateStatus.UPDATE_REQUIRED -> ApiResponse.ok(result)
