@@ -2,7 +2,6 @@ package org.beyondmedicine.beyondmedicinetest.prescription.dto
 
 import jakarta.validation.constraints.Pattern
 import org.hibernate.validator.constraints.Length
-import org.hibernate.validator.constraints.UUID
 import java.time.LocalDateTime
 
 data class ActivateAccessCodeRequestDto(

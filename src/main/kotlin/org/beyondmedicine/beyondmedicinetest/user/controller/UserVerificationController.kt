@@ -1,7 +1,5 @@
 package org.beyondmedicine.beyondmedicinetest.user.controller
 
-import jakarta.validation.Valid
-import jakarta.validation.constraints.NotBlank
 import org.beyondmedicine.beyondmedicinetest.common.dto.ApiResponse
 import org.beyondmedicine.beyondmedicinetest.user.constants.UpdateStatus
 import org.beyondmedicine.beyondmedicinetest.user.dto.UserVerificationRequestDto
