@@ -1,14 +1,8 @@
 package org.beyondmedicine.beyondmedicinetest.prescription.service
 
-
-import org.beyondmedicine.beyondmedicinetest.prescription.domain.AccessCodeHistory
-import org.beyondmedicine.beyondmedicinetest.prescription.domain.UserAccessCode
 import org.beyondmedicine.beyondmedicinetest.prescription.domain.constant.AccessCodeStatus
-import org.beyondmedicine.beyondmedicinetest.prescription.dto.ActivateAccessCodeRequestDto
-import org.beyondmedicine.beyondmedicinetest.prescription.dto.CreateAccessCodeRequestDto
-import org.beyondmedicine.beyondmedicinetest.prescription.dto.CreateAccessCodeResponseDto
-import org.beyondmedicine.beyondmedicinetest.prescription.repository.AccessCodeHistoryRepository
-import org.beyondmedicine.beyondmedicinetest.prescription.repository.UserAccessCodeRepository
+import org.beyondmedicine.beyondmedicinetest.prescription.dto.*
+import org.beyondmedicine.beyondmedicinetest.prescription.repository.custom.AccessCodeRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.security.SecureRandom
@@ -16,30 +10,32 @@ import kotlin.random.Random
 
 @Service
 class AccessCodeServiceImpl(
-    private val accessCodeRepository: AccessCodeHistoryRepository,
-    private val userAccessCodeRepository: UserAccessCodeRepository,
+    private val accessCodeRepository: AccessCodeRepository,
     private val random: SecureRandom
 ) : AccessCodeService {
 
     // 처방코드 생성 로직
     @Transactional
     override fun createAccessCodeHistory(requestDto: CreateAccessCodeRequestDto): CreateAccessCodeResponseDto {
-
         val hospitalId: String = requestDto.hospitalId
         // 처방코드 생성
         val accessCode: String = generateNewAccessCode()
 
-        val accessCodeHistory: AccessCodeHistory = AccessCodeHistory.createNewAccessCodeHistory(hospitalId, accessCode)
+        val accessCodeHistoryDto: AccessCodeHistoryDto = AccessCodeHistoryDto.create(
+            hospitalId = hospitalId,
+            accessCode = accessCode
+        )
 
-        val result: AccessCodeHistory = accessCodeRepository.save(accessCodeHistory)
+        val result: AccessCodeHistoryDto = accessCodeRepository.saveAccessCodeHistory(accessCodeHistoryDto)
 
-        return AccessCodeHistory.toResponseDto(result)
-
+        return CreateAccessCodeResponseDto(
+            accessCode = result.accessCode,
+            createdAt = result.createdAt
+        )
     }
 
     @Transactional
     override fun activateAccessCode(requestDto: ActivateAccessCodeRequestDto) {
-
         // Validation 과정 요약
         // 1. accessCode 가 존재하는지 확인
         // 2. userId 가 존재하는지 확인
@@ -51,65 +47,54 @@ class AccessCodeServiceImpl(
         //    - 없을 경우 userAccessCode 생성
         
         val userId: String = requestDto.userId
-
         val accessCode: String = requestDto.accessCode
         
         validateAccessCode(accessCode)
 
-        val existingUserAccessCode: UserAccessCode? = getExistingUserAccessCode(userId)
+        val existingUserAccessCodeDto: UserAccessCodeDto? = getExistingUserAccessCode(userId)
         
-        if (existingUserAccessCode != null) {
-
-            if (existingUserAccessCode.isExpired()) {
-
-                existingUserAccessCode.expire()
-
-                userAccessCodeRepository.save(existingUserAccessCode)
-
+        if (existingUserAccessCodeDto != null) {
+            if (existingUserAccessCodeDto.isExpired()) {
+                val expiredDto = existingUserAccessCodeDto.expire()
+                accessCodeRepository.saveUserAccessCode(expiredDto)
                 createAndSaveUserAccessCode(userId, accessCode)
-
-            } else throw IllegalStateException("User already has active access code")
-
-        }else{
+            } else {
+                throw IllegalStateException("User already has active access code")
+            }
+        } else {
             createAndSaveUserAccessCode(userId, accessCode)
         }
-
     }
 
     @Transactional
     override fun isUserAccessCodeActivated(userId: String): Boolean {
-
-        val existingUserAccessCode: UserAccessCode? = getExistingUserAccessCode(userId)
-
-        return existingUserAccessCode != null
+        val existingUserAccessCodeDto: UserAccessCodeDto? = getExistingUserAccessCode(userId)
+        return existingUserAccessCodeDto != null
     }
 
-    private fun getExistingUserAccessCode(userId: String) =
-        userAccessCodeRepository.findByUserIdAndStatus(userId, AccessCodeStatus.ACTIVE)
+    private fun getExistingUserAccessCode(userId: String): UserAccessCodeDto? {
+        return accessCodeRepository.findUserAccessCodeByUserIdAndStatus(userId, AccessCodeStatus.ACTIVE)
+    }
 
     private fun createAndSaveUserAccessCode(userId: String, accessCode: String) {
-
-        val userAccessCode: UserAccessCode = UserAccessCode.activateAccessCode(userId, accessCode)
-
-        userAccessCodeRepository.save(userAccessCode)
+        val userAccessCodeDto: UserAccessCodeDto = UserAccessCodeDto.activateAccessCode(userId, accessCode)
+        accessCodeRepository.saveUserAccessCode(userAccessCodeDto)
     }
 
-    private fun validateAccessCode(accessCode: String) = accessCodeRepository.findByAccessCode(accessCode)
-        ?: throw IllegalArgumentException("Access code not found")
+    private fun validateAccessCode(accessCode: String): AccessCodeHistoryDto {
+        return accessCodeRepository.findByAccessCode(accessCode)
+            ?: throw IllegalArgumentException("Access code not found")
+    }
 
     private fun generateNewAccessCode(): String {
-
         var attempt = 0
         val maxAttempt = 5
 
         while (attempt < maxAttempt) {
-
             val accessCode: String = generateRandomAccessCode()
-
             if (!accessCodeRepository.existsByAccessCode(accessCode)) {
                 return accessCode
             }
-
             attempt++
         }
 
@@ -117,7 +102,6 @@ class AccessCodeServiceImpl(
     }
 
     private fun generateRandomAccessCode(): String {
-
         // 난수 생성 요소
         val timeNanos: Long = System.nanoTime()
         val randomLong: Long = random.nextLong()
@@ -133,7 +117,6 @@ class AccessCodeServiceImpl(
 
         // 조합 후 섞기
         val combined: CharArray = ("$letters$numbers").toCharArray()
-
         combined.shuffle(random)
 
         return String(combined)

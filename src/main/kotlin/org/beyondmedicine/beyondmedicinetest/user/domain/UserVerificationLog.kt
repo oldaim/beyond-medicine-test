@@ -1,7 +1,7 @@
 package org.beyondmedicine.beyondmedicinetest.user.domain
 
 import jakarta.persistence.*
-import org.beyondmedicine.beyondmedicinetest.prescription.domain.AccessCodeHistory
+import org.beyondmedicine.beyondmedicinetest.user.dto.UserVerificationLogDto
 import org.hibernate.annotations.CreationTimestamp
 import java.time.LocalDateTime
 
@@ -34,7 +34,6 @@ class UserVerificationLog (
 
 ){
     companion object{
-
         fun createUserLog(userId: String, version: String, os: String, mode: String, hash: String): UserVerificationLog{
             return UserVerificationLog(
                 userId = userId,
@@ -44,7 +43,30 @@ class UserVerificationLog (
                 hash = hash
             )
         }
-
+        
+        fun fromDto(dto: UserVerificationLogDto): UserVerificationLog {
+            return UserVerificationLog(
+                id = dto.id,
+                userId = dto.userId,
+                version = dto.version,
+                os = dto.os,
+                mode = dto.mode,
+                hash = dto.hash,
+                requestedAt = dto.requestedAt
+            )
+        }
+    }
+    
+    fun toDto(): UserVerificationLogDto {
+        return UserVerificationLogDto(
+            id = this.id,
+            userId = this.userId,
+            version = this.version,
+            os = this.os,
+            mode = this.mode,
+            hash = this.hash,
+            requestedAt = this.requestedAt
+        )
     }
 
     override fun equals(other: Any?): Boolean {

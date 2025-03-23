@@ -28,16 +28,26 @@ class AppVersion (
 ){
 
     companion object{
-
         fun toDto(entity: AppVersion): AppVersionDto {
             return AppVersionDto(
+                id = entity.id,
                 latestVersion = entity.latestVersion,
                 minimumVersion = entity.minimumVersion,
+                os = entity.os,
+                mode = entity.mode,
                 hash = entity.hash
             )
         }
-
     }
 
-
+    fun toDto(): AppVersionDto {
+        return AppVersionDto(
+            id = this.id,
+            latestVersion = this.latestVersion,
+            minimumVersion = this.minimumVersion,
+            os = this.os,
+            mode = this.mode,
+            hash = this.hash
+        )
+    }
 }

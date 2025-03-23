@@ -27,29 +27,44 @@ class AccessCodeHistory(
     companion object {
         // 새로운 처방코드 생성 팩터리 메서드
         fun createNewAccessCodeHistory(hospitalId: String, accessCode: String): AccessCodeHistory {
-
             return AccessCodeHistory(
                 hospitalId = hospitalId,
                 accessCode = accessCode
             )
-
+        }
+        
+        fun fromDto(dto: AccessCodeHistoryDto): AccessCodeHistory {
+            return AccessCodeHistory(
+                id = dto.id,
+                hospitalId = dto.hospitalId,
+                accessCode = dto.accessCode,
+                createdAt = dto.createdAt
+            )
         }
 
         fun toResponseDto(entity: AccessCodeHistory): CreateAccessCodeResponseDto {
-            return CreateAccessCodeResponseDto(
-                accessCode = entity.accessCode,
-                createdAt = entity.createdAt
-            )
+            return CreateAccessCodeResponseDto.fromEntity(entity)
         }
 
         fun toInfoDto(entity: AccessCodeHistory): AccessCodeHistoryDto {
-            return AccessCodeHistoryDto(
-                id = entity.id?: -1,
-                hospitalId = entity.hospitalId,
-                accessCode = entity.accessCode,
-                createdAt = entity.createdAt
-            )
+            return AccessCodeHistoryDto.fromEntity(entity)
         }
+    }
+    
+    fun toDto(): AccessCodeHistoryDto {
+        return AccessCodeHistoryDto(
+            id = this.id,
+            hospitalId = this.hospitalId,
+            accessCode = this.accessCode,
+            createdAt = this.createdAt
+        )
+    }
+    
+    fun toResponseDto(): CreateAccessCodeResponseDto {
+        return CreateAccessCodeResponseDto(
+            accessCode = this.accessCode,
+            createdAt = this.createdAt
+        )
     }
 
     override fun equals(other: Any?): Boolean {

@@ -2,6 +2,7 @@ package org.beyondmedicine.beyondmedicinetest.prescription.domain
 
 import jakarta.persistence.*
 import org.beyondmedicine.beyondmedicinetest.prescription.domain.constant.AccessCodeStatus
+import org.beyondmedicine.beyondmedicinetest.prescription.dto.UserAccessCodeDto
 import java.time.LocalDateTime
 
 @Entity
@@ -29,7 +30,6 @@ class UserAccessCode(
 ) {
 
     companion object {
-
         private const val EXPIRE_DAYS = 43L
 
         // 사용자 처방코드 활성화 팩터리 메서드
@@ -50,6 +50,28 @@ class UserAccessCode(
                 expiresAt = expirationDate
             )
         }
+        
+        fun fromDto(dto: UserAccessCodeDto): UserAccessCode {
+            return UserAccessCode(
+                id = dto.id,
+                userId = dto.userId,
+                accessCode = dto.accessCode,
+                status = dto.status,
+                activatedAt = dto.activatedAt,
+                expiresAt = dto.expiresAt
+            )
+        }
+    }
+    
+    fun toDto(): UserAccessCodeDto {
+        return UserAccessCodeDto(
+            id = this.id,
+            userId = this.userId,
+            accessCode = this.accessCode,
+            status = this.status,
+            activatedAt = this.activatedAt,
+            expiresAt = this.expiresAt
+        )
     }
 
     fun isExpired(): Boolean {
