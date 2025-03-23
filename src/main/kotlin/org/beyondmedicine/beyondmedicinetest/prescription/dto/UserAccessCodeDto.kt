@@ -1,6 +1,5 @@
 package org.beyondmedicine.beyondmedicinetest.prescription.dto
 
-import org.beyondmedicine.beyondmedicinetest.prescription.domain.UserAccessCode
 import org.beyondmedicine.beyondmedicinetest.prescription.domain.constant.AccessCodeStatus
 import java.time.LocalDateTime
 
