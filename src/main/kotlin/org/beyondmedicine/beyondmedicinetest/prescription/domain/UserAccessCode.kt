@@ -30,26 +30,6 @@ class UserAccessCode(
 ) {
 
     companion object {
-        private const val EXPIRE_DAYS = 43L
-
-        // 사용자 처방코드 활성화 팩터리 메서드
-        fun activateAccessCode(userId: String, accessCode: String): UserAccessCode {
-            val activatedDate = LocalDateTime.now()
-            // 활성화 시점으로부터 6주 후 자정에 만료
-            val expirationDate = activatedDate.plusDays(EXPIRE_DAYS)
-                .withHour(0)
-                .withMinute(0)
-                .withSecond(0)
-                .withNano(0)
-
-            return UserAccessCode(
-                userId = userId,
-                accessCode = accessCode,
-                status = AccessCodeStatus.ACTIVE,
-                activatedAt = activatedDate,
-                expiresAt = expirationDate
-            )
-        }
         
         fun fromDto(dto: UserAccessCodeDto): UserAccessCode {
             return UserAccessCode(
