@@ -1,9 +1,12 @@
 package org.beyondmedicine.beyondmedicinetest.user.controller
 
+import jakarta.validation.Valid
+import jakarta.validation.constraints.NotBlank
 import org.beyondmedicine.beyondmedicinetest.common.dto.ApiResponse
 import org.beyondmedicine.beyondmedicinetest.user.constants.UpdateStatus
 import org.beyondmedicine.beyondmedicinetest.user.dto.UserVerificationRequestDto
 import org.beyondmedicine.beyondmedicinetest.user.service.UserVerificationService
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
@@ -23,7 +26,7 @@ class UserVerificationController(
         @RequestParam("os", required = true) os: String,
         @RequestParam("mode", required = true) mode: String,
         @RequestParam("hash", required = true) hash: String
-    ): ApiResponse<UpdateStatus> {
+    ): ResponseEntity<ApiResponse<UpdateStatus>> {
 
         val requestDto = UserVerificationRequestDto.create(
             userId = userId,
@@ -42,4 +45,5 @@ class UserVerificationController(
         }
 
     }
+
 }
