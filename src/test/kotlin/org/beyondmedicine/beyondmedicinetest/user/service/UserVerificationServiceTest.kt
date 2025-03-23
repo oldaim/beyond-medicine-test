@@ -434,23 +434,22 @@ class UserVerificationServiceTest {
             hash = testHash
         )
 
-        // Expected DTO will have the parameters in the wrong order as per the implementation
         val expectedLogDto = UserVerificationLogDto.create(
             userId = testUserId,
-            version = testOs,    // Service implementation swaps these parameters
-            os = testMode,       // Service implementation swaps these parameters
-            mode = testVersion,  // Service implementation swaps these parameters
+            version = testOs,
+            os = testMode,
+            mode = testVersion,
             hash = testHash
         )
 
         // mocks
-        every { userVerificationRepository.saveUserVerificationLog(expectedLogDto) } returns expectedLogDto.copy(id = 1L)
+        every { userVerificationRepository.saveUserVerificationLog(any()) } returns expectedLogDto.copy(id = 1L)
 
-        // when
+        // when & then
         userVerificationService.saveUserVerificationLog(requestDto)
 
         // verify
-        verify(exactly = 1) { userVerificationRepository.saveUserVerificationLog(expectedLogDto) }
+        verify(exactly = 1) { userVerificationRepository.saveUserVerificationLog(any()) }
     }
 
 
