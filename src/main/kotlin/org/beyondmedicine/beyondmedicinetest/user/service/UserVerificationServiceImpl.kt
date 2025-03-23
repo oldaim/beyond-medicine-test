@@ -137,7 +137,7 @@ class UserVerificationServiceImpl(
     ): Boolean {
         val hashString: String = getHashString(os, mode)
 
-        return hashString != requestHash || hashString != entityHash
+        return hashString == requestHash && hashString == entityHash
     }
 
     // os와 mode로 생성한 hash를 반환
@@ -150,6 +150,6 @@ class UserVerificationServiceImpl(
     // os와 mode에 해당하는 AppVersion을 찾아서 AppVersionDto로 변환
     private fun findAppVersion(os: String, mode: String): AppVersionDto {
         return userVerificationRepository.findAppVersionByOsAndMode(os, mode)
-            ?: throw IllegalArgumentException("os and mode not found")
+            ?: throw IllegalArgumentException("os and mode not found or database error")
     }
 }
