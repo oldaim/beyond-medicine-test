@@ -6,6 +6,7 @@ import org.beyondmedicine.beyondmedicinetest.prescription.dto.ActivateAccessCode
 import org.beyondmedicine.beyondmedicinetest.prescription.dto.CreateAccessCodeRequestDto
 import org.beyondmedicine.beyondmedicinetest.prescription.dto.CreateAccessCodeResponseDto
 import org.beyondmedicine.beyondmedicinetest.prescription.service.AccessCodeService
+import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -21,20 +22,20 @@ class AccessCodeController(
     @PostMapping("/access-code")
     fun createAccessCode(
         @Validated @RequestBody requestDto: CreateAccessCodeRequestDto
-    ): ApiResponse<CreateAccessCodeResponseDto> {
+    ): ResponseEntity<ApiResponse<CreateAccessCodeResponseDto>> {
 
         val result: CreateAccessCodeResponseDto = accessCodeService.createAccessCodeHistory(requestDto)
 
-        return ApiResponse.ok(result)
+        return ApiResponse.created(result)
     }
 
     @PostMapping("/access-code-activations")
     fun activateAccessCode(
         @Validated @RequestBody requestDto: ActivateAccessCodeRequestDto
-    ): ApiResponse<ActivateAccessCodeResponseDto> {
+    ): ResponseEntity<ApiResponse<ActivateAccessCodeResponseDto>> {
 
         val result: ActivateAccessCodeResponseDto = accessCodeService.activateAccessCode(requestDto)
 
-        return ApiResponse.ok(result)
+        return ApiResponse.created(result)
     }
 }

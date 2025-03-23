@@ -6,6 +6,7 @@ import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockkStatic
 import io.mockk.verify
+import org.beyondmedicine.beyondmedicinetest.common.exception.UserAccessCodeNotActivatedException
 import org.beyondmedicine.beyondmedicinetest.prescription.service.AccessCodeService
 import org.beyondmedicine.beyondmedicinetest.user.constants.UpdateStatus
 import org.beyondmedicine.beyondmedicinetest.user.dto.AppVersionDto
@@ -343,7 +344,7 @@ class UserVerificationServiceTest {
         }
 
         //then
-        exception.message shouldBe "dto parameters are not valid"
+        exception.message shouldBe "os and mode not found or database error"
 
         // verify
         verify(exactly = 1) { userVerificationRepository.findAppVersionByOsAndMode(any(), any()) }
@@ -414,7 +415,7 @@ class UserVerificationServiceTest {
         mockHashValidation(true)
 
         // when & then
-        val exception: IllegalArgumentException = shouldThrow<IllegalArgumentException> {
+        val exception: UserAccessCodeNotActivatedException = shouldThrow<UserAccessCodeNotActivatedException> {
             userVerificationService.verifyUserRequest(requestDto)
         }
 

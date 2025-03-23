@@ -1,5 +1,7 @@
 package org.beyondmedicine.beyondmedicinetest.prescription.service
 
+import org.beyondmedicine.beyondmedicinetest.common.exception.AccessCodeAlreadyActivatedException
+import org.beyondmedicine.beyondmedicinetest.common.exception.AccessCodeRetryFailException
 import org.beyondmedicine.beyondmedicinetest.prescription.domain.constant.AccessCodeStatus
 import org.beyondmedicine.beyondmedicinetest.prescription.dto.*
 import org.beyondmedicine.beyondmedicinetest.prescription.repository.AccessCodeRepository
@@ -53,14 +55,14 @@ class AccessCodeServiceImpl(
                 // DB 수준에서 중복키 예외가 발생한 경우
                 attempt++
 
-                if (attempt >= maxAttempt) throw RuntimeException("Failed to generate new access code after $maxAttempt attempts", e)
+                if (attempt >= maxAttempt) throw AccessCodeRetryFailException("Failed to generate new access code after $maxAttempt attempts")
 
                 // 로그 남기기
                 logger.warn("Access code collision detected, retrying (attempt $attempt of $maxAttempt)")
             }
         }
 
-        throw RuntimeException("Failed to generate new access code after $maxAttempt attempts")
+        throw AccessCodeRetryFailException("Failed to generate new access code after $maxAttempt attempts")
     }
 
     @Transactional
@@ -93,7 +95,7 @@ class AccessCodeServiceImpl(
 
             } else {
                 logger.error("User $userId already has active access code")
-                throw IllegalStateException("User already has active access code")
+                throw AccessCodeAlreadyActivatedException("User already has active access code")
             }
         } else {
             return createAndSaveUserAccessCode(userId, accessCode)
@@ -126,7 +128,7 @@ class AccessCodeServiceImpl(
 
     private fun validateAccessCode(accessCode: String): AccessCodeHistoryDto {
         return accessCodeRepository.findByAccessCode(accessCode)
-            ?: throw IllegalArgumentException("Access code not found")
+            ?: throw NoSuchElementException("Access code not found")
     }
 
     private fun generateRandomAccessCode(): String {

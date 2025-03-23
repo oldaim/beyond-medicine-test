@@ -1,11 +1,14 @@
 package org.beyondmedicine.beyondmedicinetest.prescription.dto
 
+import jakarta.validation.constraints.Pattern
 import org.hibernate.validator.constraints.Length
-import org.hibernate.validator.constraints.UUID
 import java.time.LocalDateTime
 
 data class ActivateAccessCodeRequestDto(
-    @UUID
+    @field:Pattern(
+        regexp = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+        message = "유효한 UUID 형식이 아닙니다"
+    )
     val userId: String,
 
     @field:Length(min = 8, max = 8, message = "accessCode length must be 8")

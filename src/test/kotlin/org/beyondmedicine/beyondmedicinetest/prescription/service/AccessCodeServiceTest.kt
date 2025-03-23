@@ -6,6 +6,8 @@ import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import io.mockk.every
 import io.mockk.verify
+import org.beyondmedicine.beyondmedicinetest.common.exception.AccessCodeAlreadyActivatedException
+import org.beyondmedicine.beyondmedicinetest.common.exception.AccessCodeRetryFailException
 import org.beyondmedicine.beyondmedicinetest.prescription.domain.constant.AccessCodeStatus
 import org.beyondmedicine.beyondmedicinetest.prescription.dto.*
 import org.beyondmedicine.beyondmedicinetest.prescription.repository.AccessCodeRepository
@@ -83,7 +85,7 @@ class AccessCodeServiceTest {
         every { accessCodeRepository.existsByAccessCode(any()) } returns true
 
         // when & then
-        val exception = shouldThrow<RuntimeException> {
+        val exception = shouldThrow<AccessCodeRetryFailException> {
             accessCodeService.createAccessCodeHistory(requestDto)
         }
 
@@ -172,7 +174,7 @@ class AccessCodeServiceTest {
         every { accessCodeRepository.findByAccessCode(testAccessCode) } returns null
 
         // when & then
-        val exception = shouldThrow<IllegalArgumentException> {
+        val exception = shouldThrow<NoSuchElementException> {
             accessCodeService.activateAccessCode(requestDto)
         }
 
@@ -214,7 +216,7 @@ class AccessCodeServiceTest {
         } returns existingUserAccessCodeDto
 
         // when & then
-        val exception = shouldThrow<IllegalStateException> {
+        val exception = shouldThrow<AccessCodeAlreadyActivatedException> {
             accessCodeService.activateAccessCode(requestDto)
         }
 
