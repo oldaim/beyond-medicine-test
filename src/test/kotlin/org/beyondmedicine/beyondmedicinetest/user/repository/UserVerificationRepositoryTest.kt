@@ -12,7 +12,6 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Import
 import org.springframework.test.context.TestPropertySource
-import java.time.LocalDateTime
 
 @JpaRepositoryTest
 @Import(UserVerificationRepositoryImpl::class)

@@ -4,15 +4,14 @@ import com.ninjasquad.springmockk.MockkBean
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
 import io.mockk.every
-import io.mockk.verify
 import io.mockk.mockkStatic
+import io.mockk.verify
 import org.beyondmedicine.beyondmedicinetest.prescription.service.AccessCodeService
 import org.beyondmedicine.beyondmedicinetest.user.constants.UpdateStatus
 import org.beyondmedicine.beyondmedicinetest.user.dto.AppVersionDto
 import org.beyondmedicine.beyondmedicinetest.user.dto.UserVerificationLogDto
 import org.beyondmedicine.beyondmedicinetest.user.dto.UserVerificationRequestDto
 import org.beyondmedicine.beyondmedicinetest.user.repository.UserVerificationRepository
-import org.hibernate.annotations.Parameter
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
