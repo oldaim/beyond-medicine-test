@@ -1,5 +1,6 @@
 package org.beyondmedicine.beyondmedicinetest.user.service
 
+import org.beyondmedicine.beyondmedicinetest.common.exception.UserAccessCodeNotActivatedException
 import org.beyondmedicine.beyondmedicinetest.prescription.service.AccessCodeService
 import org.beyondmedicine.beyondmedicinetest.user.constants.UpdateStatus
 import org.beyondmedicine.beyondmedicinetest.user.dto.AppVersionDto
@@ -39,7 +40,7 @@ class UserVerificationServiceImpl(
         if (!isHashMatched) throw IllegalArgumentException("hash is not matched")
 
         // 사용자 검증 과정
-        if (!accessCodeService.isUserAccessCodeActivated(userId)) throw IllegalArgumentException("user access code is not activated")
+        if (!accessCodeService.isUserAccessCodeActivated(userId)) throw UserAccessCodeNotActivatedException("user access code is not activated")
 
         // 버전 검증 과정
         return validateVersion(version, appVersionDto.latestVersion, appVersionDto.minimumVersion)

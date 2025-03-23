@@ -25,6 +25,27 @@ data class ApiResponse<T>(
             return ApiResponse(code, message)
         }
 
+        fun <T> forbidden(message: String): ApiResponse<T> {
+
+            val code: Int = HttpStatus.FORBIDDEN.value()
+
+            return ApiResponse(code, message)
+        }
+
+        fun <T> notFound(message: String): ApiResponse<T> {
+
+            val code: Int = HttpStatus.NOT_FOUND.value()
+
+            return ApiResponse(code, message)
+        }
+
+        fun <T> conflict(message: String): ApiResponse<T> {
+
+            val code: Int = HttpStatus.CONFLICT.value()
+
+            return ApiResponse(code, message)
+        }
+
         fun <T> internalServerError(message: String): ApiResponse<T> {
 
             val code: Int = HttpStatus.INTERNAL_SERVER_ERROR.value()
