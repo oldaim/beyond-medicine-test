@@ -56,7 +56,7 @@ class AccessCodeController(
 
         val result: CreateAccessCodeResponseDto = accessCodeService.createAccessCodeHistory(requestDto)
 
-        return ApiResponse.created(result)
+        return ApiResponse.created(data = result)
     }
 
     @Operation(
@@ -92,6 +92,6 @@ class AccessCodeController(
 
         val result: ActivateAccessCodeResponseDto = accessCodeService.activateAccessCode(requestDto)
 
-        return ApiResponse.created(result)
+        return ApiResponse.created(data = result)
     }
 }

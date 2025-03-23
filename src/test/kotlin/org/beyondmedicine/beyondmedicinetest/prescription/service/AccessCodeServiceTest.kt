@@ -130,7 +130,7 @@ class AccessCodeServiceTest {
         responseDto.accessCode shouldBe testAccessCode
 
         //시간관련 검증
-        val expiresDate = responseDto.createdAt.plusDays(43).withHour(0).withMinute(0).withSecond(0).withNano(0)
+        val expiresDate = responseDto.activatedAt.plusDays(43).withHour(0).withMinute(0).withSecond(0).withNano(0)
         responseDto.expiresAt shouldBe expiresDate
 
 

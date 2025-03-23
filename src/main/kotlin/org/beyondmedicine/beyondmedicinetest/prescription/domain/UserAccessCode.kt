@@ -12,7 +12,7 @@ class UserAccessCode(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
 
-    @Column(nullable = false, length = 32)
+    @Column(nullable = false, length = 40)
     val userId: String,
 
     @Column(nullable = false, length = 8)

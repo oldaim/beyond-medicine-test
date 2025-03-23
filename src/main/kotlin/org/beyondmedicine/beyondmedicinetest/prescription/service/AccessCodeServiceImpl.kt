@@ -146,9 +146,9 @@ class AccessCodeServiceImpl(
         val random = Random(randomSeed)
 
         // 4자리 문자열 생성
-        val letters: String = (1..4).map { ('A' .. 'Z').random(random) }.joinToString { "" }
+        val letters: String = (1..4).map { ('A' .. 'Z').random(random) }.joinToString("")
         // 4자리 숫자열 생성
-        val numbers: String = (1..4).map { ('0' .. '9').random(random) }.joinToString { "" }
+        val numbers: String = (1..4).map { ('0' .. '9').random(random) }.joinToString("")
 
         // 조합 후 섞기
         val combined: CharArray = ("$letters$numbers").toCharArray()

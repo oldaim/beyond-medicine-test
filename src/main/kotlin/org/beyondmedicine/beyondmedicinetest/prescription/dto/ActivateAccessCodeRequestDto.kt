@@ -28,7 +28,7 @@ data class ActivateAccessCodeResponseDto(
     val accessCode: String,
     
     @Schema(description = "처방코드 활성화 시간", example = "2025-03-23T15:30:45.123")
-    val createdAt: LocalDateTime,
+    val activatedAt: LocalDateTime,
     
     @Schema(description = "처방코드 만료 시간 (6주 후 자정)", example = "2025-05-04T23:59:59.999")
     val expiresAt: LocalDateTime
@@ -39,7 +39,7 @@ data class ActivateAccessCodeResponseDto(
             return ActivateAccessCodeResponseDto(
                 userId = userId,
                 accessCode = accessCode,
-                createdAt = createdAt,
+                activatedAt = createdAt,
                 expiresAt = expiredAt
             )
         }
