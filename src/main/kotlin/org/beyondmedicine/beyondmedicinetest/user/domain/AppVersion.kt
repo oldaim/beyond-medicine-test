@@ -27,19 +27,6 @@ class AppVersion (
     val hash: String
 ){
 
-    companion object{
-        fun toDto(entity: AppVersion): AppVersionDto {
-            return AppVersionDto(
-                id = entity.id,
-                latestVersion = entity.latestVersion,
-                minimumVersion = entity.minimumVersion,
-                os = entity.os,
-                mode = entity.mode,
-                hash = entity.hash
-            )
-        }
-    }
-
     fun toDto(): AppVersionDto {
         return AppVersionDto(
             id = this.id,

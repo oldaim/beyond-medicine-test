@@ -34,15 +34,6 @@ class UserVerificationLog (
 
 ){
     companion object{
-        fun createUserLog(userId: String, version: String, os: String, mode: String, hash: String): UserVerificationLog{
-            return UserVerificationLog(
-                userId = userId,
-                version = version,
-                os = os,
-                mode = mode,
-                hash = hash
-            )
-        }
         
         fun fromDto(dto: UserVerificationLogDto): UserVerificationLog {
             return UserVerificationLog(

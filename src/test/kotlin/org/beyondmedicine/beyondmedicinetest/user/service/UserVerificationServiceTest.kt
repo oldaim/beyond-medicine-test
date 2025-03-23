@@ -4,7 +4,6 @@ import com.ninjasquad.springmockk.MockkBean
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
 import io.mockk.every
-import io.mockk.mockkStatic
 import io.mockk.verify
 import org.beyondmedicine.beyondmedicinetest.common.exception.UserAccessCodeNotActivatedException
 import org.beyondmedicine.beyondmedicinetest.prescription.service.AccessCodeService
@@ -22,8 +21,6 @@ import org.junit.jupiter.params.provider.ValueSource
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.junit.jupiter.SpringExtension
-import java.security.MessageDigest
-import java.util.*
 
 @ExtendWith(SpringExtension::class)
 @SpringBootTest

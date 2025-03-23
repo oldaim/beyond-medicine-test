@@ -11,8 +11,6 @@ import org.beyondmedicine.beyondmedicinetest.user.repository.UserVerificationRep
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.security.MessageDigest
-import java.util.*
 
 @Service
 class UserVerificationServiceImpl(

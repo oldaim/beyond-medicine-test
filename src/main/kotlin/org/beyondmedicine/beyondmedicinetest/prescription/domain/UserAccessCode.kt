@@ -74,14 +74,6 @@ class UserAccessCode(
         )
     }
 
-    fun isExpired(): Boolean {
-        return LocalDateTime.now().isAfter(expiresAt) || status == AccessCodeStatus.EXPIRED
-    }
-
-    fun expire() {
-        this.status = AccessCodeStatus.EXPIRED
-    }
-
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
