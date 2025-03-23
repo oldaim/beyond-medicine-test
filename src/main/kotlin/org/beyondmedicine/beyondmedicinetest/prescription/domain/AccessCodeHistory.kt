@@ -2,7 +2,6 @@ package org.beyondmedicine.beyondmedicinetest.prescription.domain
 
 import jakarta.persistence.*
 import org.beyondmedicine.beyondmedicinetest.prescription.dto.AccessCodeHistoryDto
-import org.beyondmedicine.beyondmedicinetest.prescription.dto.CreateAccessCodeResponseDto
 import org.hibernate.annotations.CreationTimestamp
 import java.time.LocalDateTime
 
@@ -25,31 +24,24 @@ class AccessCodeHistory(
 ) {
 
     companion object {
-        // 새로운 처방코드 생성 팩터리 메서드
-        fun createNewAccessCodeHistory(hospitalId: String, accessCode: String): AccessCodeHistory {
-
+        
+        fun fromDto(dto: AccessCodeHistoryDto): AccessCodeHistory {
             return AccessCodeHistory(
-                hospitalId = hospitalId,
-                accessCode = accessCode
-            )
-
-        }
-
-        fun toResponseDto(entity: AccessCodeHistory): CreateAccessCodeResponseDto {
-            return CreateAccessCodeResponseDto(
-                accessCode = entity.accessCode,
-                createdAt = entity.createdAt
+                id = dto.id,
+                hospitalId = dto.hospitalId,
+                accessCode = dto.accessCode,
+                createdAt = dto.createdAt
             )
         }
-
-        fun toInfoDto(entity: AccessCodeHistory): AccessCodeHistoryDto {
-            return AccessCodeHistoryDto(
-                id = entity.id?: -1,
-                hospitalId = entity.hospitalId,
-                accessCode = entity.accessCode,
-                createdAt = entity.createdAt
-            )
-        }
+    }
+    
+    fun toDto(): AccessCodeHistoryDto {
+        return AccessCodeHistoryDto(
+            id = this.id,
+            hospitalId = this.hospitalId,
+            accessCode = this.accessCode,
+            createdAt = this.createdAt
+        )
     }
 
     override fun equals(other: Any?): Boolean {

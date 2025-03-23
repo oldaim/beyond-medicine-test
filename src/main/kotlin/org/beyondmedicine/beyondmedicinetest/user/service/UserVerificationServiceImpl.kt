@@ -2,12 +2,10 @@ package org.beyondmedicine.beyondmedicinetest.user.service
 
 import org.beyondmedicine.beyondmedicinetest.prescription.service.AccessCodeService
 import org.beyondmedicine.beyondmedicinetest.user.constants.UpdateStatus
-import org.beyondmedicine.beyondmedicinetest.user.domain.AppVersion
-import org.beyondmedicine.beyondmedicinetest.user.domain.UserVerificationLog
 import org.beyondmedicine.beyondmedicinetest.user.dto.AppVersionDto
+import org.beyondmedicine.beyondmedicinetest.user.dto.UserVerificationLogDto
 import org.beyondmedicine.beyondmedicinetest.user.dto.UserVerificationRequestDto
-import org.beyondmedicine.beyondmedicinetest.user.repository.AppVersionRepository
-import org.beyondmedicine.beyondmedicinetest.user.repository.UserVerificationLogRepository
+import org.beyondmedicine.beyondmedicinetest.user.repository.UserVerificationRepository
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import java.security.MessageDigest
@@ -15,8 +13,7 @@ import java.util.*
 
 @Service
 class UserVerificationServiceImpl(
-    private val userVerificationLogRepository: UserVerificationLogRepository,
-    private val appVersionRepository: AppVersionRepository,
+    private val userVerificationRepository: UserVerificationRepository,
     private val accessCodeService: AccessCodeService,
     @Value("\${verification.hash.secret}")
     private val requestHashSecret: String,
@@ -25,15 +22,11 @@ class UserVerificationServiceImpl(
 
     override fun verifyUserRequest(requestDto: UserVerificationRequestDto): UpdateStatus {
         try {
-
             if (!requestDto.isDtoValid()) throw IllegalArgumentException("dto parameters are not valid")
 
             val os: String = requestDto.os
-
             val mode: String = requestDto.mode
-
             val userId: String = requestDto.userId
-
             val version = requestDto.version
 
             val appVersionDto: AppVersionDto = findAppVersion(requestDto.os, requestDto.mode)
@@ -49,12 +42,11 @@ class UserVerificationServiceImpl(
             // 버전 검증 과정
             return validateVersion(version, appVersionDto.latestVersion, appVersionDto.minimumVersion)
 
-        }catch (e: IllegalArgumentException){
+        } catch (e: IllegalArgumentException) {
             throw e
-        }finally {
-
+        } finally {
             //exception 발생 여부와 상관없이 로그 저장
-            val userVerificationLog: UserVerificationLog = UserVerificationLog.createUserLog(
+            val userVerificationLogDto = UserVerificationLogDto.create(
                 userId = requestDto.userId,
                 version = requestDto.os,
                 os = requestDto.mode,
@@ -62,12 +54,11 @@ class UserVerificationServiceImpl(
                 hash = requestDto.hash
             )
 
-            userVerificationLogRepository.save(userVerificationLog)
+            userVerificationRepository.saveUserVerificationLog(userVerificationLogDto)
         }
     }
 
     private fun validateVersion(version: String, latestVersion: String, minimumVersion: String): UpdateStatus {
-
         return when {
             // 현재 버전이 최소 버전보다 낮은 경우
             compareVersion(version, minimumVersion) < 0 -> UpdateStatus.FORCE_UPDATE_REQUIRED
@@ -79,8 +70,7 @@ class UserVerificationServiceImpl(
     }
 
     // 버전 비교 로직 x.y.z-[alpha|beta].n 형식을 최대로 가정하고 비교
-    private fun compareVersion(currentVersion: String, compareVersion: String): Int{
-
+    private fun compareVersion(currentVersion: String, compareVersion: String): Int {
         // main, sub 분리
         val currentStList: List<String> = currentVersion.split("-")
         val compareStList: List<String> = compareVersion.split("-")
@@ -90,7 +80,7 @@ class UserVerificationServiceImpl(
         val compareMainList: List<String> = compareStList[0].split(".")
 
         // main 비교
-        for (i in 0..2){
+        for (i in 0..2) {
             val currentMain: Int = currentMainList[i].toInt()
             val compareMain: Int = compareMainList[i].toInt()
 
@@ -116,7 +106,6 @@ class UserVerificationServiceImpl(
 
         // 프리 릴리스 버전이 같은 경우에 숫자 비교 (ex. alpha.1, alpha.2)
         if (currentPreList[0] == comparePreList[0]) {
-
             // 하나만 숫자가 있는 경우
             if (currentPreList.size == 1 && comparePreList.size > 1) return -1
             if (currentPreList.size > 1 && comparePreList.size == 1) return 1
@@ -143,7 +132,6 @@ class UserVerificationServiceImpl(
         os: String,
         mode: String
     ): Boolean {
-
         val hashString: String = getHashString(os, mode)
 
         return hashString != requestHash || hashString != entityHash
@@ -151,22 +139,14 @@ class UserVerificationServiceImpl(
 
     // os와 mode로 생성한 hash를 반환
     private fun getHashString(os: String, mode: String): String {
-
         val hashString = "$os$mode$requestHashSecret"
-
         val hashBytes: ByteArray = messageDigest.digest(hashString.toByteArray(Charsets.UTF_8))
-
         return Base64.getEncoder().encodeToString(hashBytes)
     }
 
     // os와 mode에 해당하는 AppVersion을 찾아서 AppVersionDto로 변환
     private fun findAppVersion(os: String, mode: String): AppVersionDto {
-
-        val appVersion: AppVersion = appVersionRepository.findAppVersionByOsAndMode(os, mode)?: throw IllegalArgumentException("os and mode not found")
-
-        return AppVersion.toDto(appVersion)
-
+        return userVerificationRepository.findAppVersionByOsAndMode(os, mode)
+            ?: throw IllegalArgumentException("os and mode not found")
     }
-
-
 }
