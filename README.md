@@ -78,7 +78,7 @@
     - 10번의 재시도를 모두 실패할 경우, AccessCodeRetryFailException을 발생시킵니다.
   
   - 처방코드 활성화 :
-    - user id 와 처방코드를 통해 처방코드를 활성화 합니다. 
+    - userId 와 처방코드를 통해 처방코드를 활성화 합니다. 
     - userId가 UUID가 아닌경우, 처방코드가 8자리가 아닌경우 에 BindException을 발생시킵니다.
     - 처방코드가 생성이력에 존재하지 않으면 NoSuchElementException, 이미 활성화된 경우, AccessCodeAlreadyActivatedException 이 발생합니다.
     - 처방코드가 생성이력에 존재하고, 활성화 되지 않은 경우나 기존 처방코드가 이미 만료된 경우, 활성화 처리를 합니다.
@@ -108,7 +108,7 @@
 - Framework : Spring Boot 3.4.4
 - Database : MySQL 9.2.0
 - Build Tool : Gradle 8.13
-- test: kotest 5.9.1
+- Test : kotest 5.9.1
 
 
 ## 2. 프로젝트 실행 방법 [프로젝트의 루트에서 실행하는것을 권장합니다.]  
