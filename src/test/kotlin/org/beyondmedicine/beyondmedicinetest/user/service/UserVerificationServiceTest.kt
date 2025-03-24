@@ -129,7 +129,7 @@ class UserVerificationServiceTest {
 
     @Test
     @DisplayName("verifyUserRequest - 사용자 검증 성공 (강제 업데이트 필요)")
-    fun verifyUserRequest_forceUpdateRequired() {
+    fun verifyUserRequest_success_forceUpdateRequired() {
 
         // given
         // 최소 버전보다 낮은 유저
@@ -194,7 +194,7 @@ class UserVerificationServiceTest {
 
     @Test
     @DisplayName("verifyUserRequest - 버전 검증 (프리릴리즈 버전 vs 정식 버전)")
-    fun compareVersion_preReleaseAlpha() {
+    fun compareVersion_success_preReleaseAlpha() {
         // given
         val requestDto = UserVerificationRequestDto.create(
             userId = testUserId,
@@ -227,7 +227,7 @@ class UserVerificationServiceTest {
 
     @Test
     @DisplayName("verifyUserRequest - 버전 검증 (알파 버전 vs 베타 버전)")
-    fun compareVersion_preReleaseBeta() {
+    fun compareVersion_success_preReleaseBeta() {
         // given
         // 알파 버전 사용자
         val requestDto = UserVerificationRequestDto.create(
@@ -427,7 +427,7 @@ class UserVerificationServiceTest {
 
     @Test
     @DisplayName("verifyUserRequest - 사용자 검증 실패 (Hash 검증 실패)")
-    fun verifyUserRequest_hashMismatch() {
+    fun verifyUserRequest_failure_hashMismatch() {
         // given
         val requestDto = UserVerificationRequestDto.create(
             userId = testUserId,
@@ -463,7 +463,7 @@ class UserVerificationServiceTest {
 
     @Test
     @DisplayName("verifyUserRequest - 사용자 검증 실패 (AccessCode 미활성화)")
-    fun verifyUserRequest_accessCodeNotActivated() {
+    fun verifyUserRequest_failure_accessCodeNotActivated() {
         // given
         val requestDto = UserVerificationRequestDto.create(
             userId = testUserId,

@@ -40,7 +40,7 @@ class AccessCodeRepositoryTest {
 
     @Test
     @DisplayName("AccessCodeHistory 저장 성공")
-    fun saveAccessCodeHistory() {
+    fun saveAccessCodeHistory_success() {
         // given
         val accessCodeHistoryDto = AccessCodeHistoryDto.create(
             hospitalId = testHospitalId,
@@ -59,7 +59,7 @@ class AccessCodeRepositoryTest {
 
     @Test
     @DisplayName("AccessCodeHistory 조회 성공")
-    fun findAccessCodeHistory() {
+    fun findAccessCodeHistory_success() {
 
         //given
         val accessCodeHistoryDto = AccessCodeHistoryDto.create(
@@ -83,7 +83,7 @@ class AccessCodeRepositoryTest {
 
     @Test
     @DisplayName("AccessCode 가 존재하는지 유무 파악 성공")
-    fun existsByAccessCode() {
+    fun existsByAccessCode_success() {
         // given
         val accessCodeHistoryDto = AccessCodeHistoryDto.create(
             hospitalId = testHospitalId,
@@ -100,7 +100,7 @@ class AccessCodeRepositoryTest {
 
     @Test
     @DisplayName("UserAccessCode 저장 성공")
-    fun saveUserAccessCode() {
+    fun saveUserAccessCode_success() {
         // given
         val userAccessCodeDto = UserAccessCodeDto(
             userId = testUserId,
@@ -121,7 +121,7 @@ class AccessCodeRepositoryTest {
 
     @Test
     @DisplayName("UserAccessCode 에서 활성화 코드 조회 성공")
-    fun findUserAccessCodeStatus() {
+    fun findUserAccessCodeStatus_success() {
         // given
         val userAccessCode = UserAccessCodeDto.activateAccessCode(testUserId, testAccessCode)
 
@@ -148,7 +148,7 @@ class AccessCodeRepositoryTest {
 
     @Test
     @DisplayName("UserAccessCode 에서 활성화 코드 조회 - 활성화 코드가 없는 경우")
-    fun findUserAccessCodeStatusFail() {
+    fun findUserAccessCodeStatus_success_notFound() {
         // given
         val userAccessCode = UserAccessCodeDto.activateAccessCode(testUserId, testAccessCode)
 
