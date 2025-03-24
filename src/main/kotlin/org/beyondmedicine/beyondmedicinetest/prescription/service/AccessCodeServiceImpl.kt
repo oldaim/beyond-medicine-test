@@ -8,6 +8,7 @@ import org.beyondmedicine.beyondmedicinetest.prescription.repository.AccessCodeR
 import org.slf4j.LoggerFactory
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Isolation
 import org.springframework.transaction.annotation.Transactional
 import java.security.SecureRandom
 import kotlin.random.Random
@@ -69,7 +70,7 @@ class AccessCodeServiceImpl(
         throw AccessCodeRetryFailException("Failed to generate new access code after $maxAttempt attempts")
     }
 
-    @Transactional
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
     override fun activateAccessCode(requestDto: ActivateAccessCodeRequestDto): ActivateAccessCodeResponseDto {
         // Validation 과정 요약
         // 1. accessCode 가 존재하는지 확인

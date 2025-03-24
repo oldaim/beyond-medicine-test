@@ -86,21 +86,27 @@
    - 사용자 검증 및 로그 저장:
      - 사용자의 userId, version, os, mode, hash 를 통해 사용자 검증을 진행합니다.
      - 검증에 앞서 사용자 로그를 저장합니다. (검증 성공 / 실패 여부와 상관 없이)
-     - 다음과 같은 경우 IllegalArgumentException을 발생시킵니다.
-       - userId가 UUID가 아닌경우
-       - version이 Major.Minor.Patch 형식이 아닌경우
-       - os가 android, ios 가 아닌경우 [ 대소문자 구분 없이 ]
-       - mode가 debug, release 가 아닌경우 [ 대소문자 구분 없이 ]
-       - hash가 일치 하지 않는 경우
-         - 사용자의 hash 검증은 os + mode + secretkey 를 해싱한 값과 사용자가 전달한 hash 값이 일치하는지 확인합니다.
-         - 또한 DB 에 저장된 hash 값 과 일치하는지 확인합니다.
-         - secretkey는 설정파일로 관리 하도록 하였습니다.
-       - 이 모든조건이 만족된 상태에서 version 검증을 진행합니다. version 은 os, mode 에 따라 DB에 저장 됩니다.
-         - version < minimum version 이면 UpdateStatus.FORCE_UPDATE_REQUIRED
-         - minimum version <= version < latest version 이면 UpdateStatus.UPDATE_REQUIRED
-         - latest version <= version 이면 UpdateStatus.NO_UPDATE_REQUIRED
+     - 요청 파라미터가 유효하지 않은 경우 IllegalArgumentException을 발생시킵니다. 
+     - 이 모든조건이 만족된 상태에서 version 검증을 진행합니다. version 은 os, mode 에 따라 DB에 저장 됩니다.
+       - version < minimum version 이면 UpdateStatus.FORCE_UPDATE_REQUIRED
+       - minimum version <= version < latest version 이면 UpdateStatus.UPDATE_REQUIRED
+       - latest version <= version 이면 UpdateStatus.NO_UPDATE_REQUIRED
 
-### 1.3. 프로젝트 환경
+### 1.3. 프로젝트 구현중 아쉬웠던 점
+
+  1. access code 생성시 동시성 이슈에 대해 재시도 로직을 도입하였으나 단순히 10회 반복하는 방식으로 구현하였습니다
+      - 재시도 로직이 많아지게 될 경우 DB 부하가 증가하는 방식이라 생각됩니다.
+      - 이에 대해 재시도 로직의 지수적 증가 를 고려하였으나, 시간관계상 구현하지 못하였습니다.
+  
+  2. hash 함수 생성에서 단순히 SHA-256 알고리즘으로 해싱을 구현했습니다.
+      - 두가지 이상의 알고리즘을 섞어서 사용하고, Bcypt 와 같은 알고리즘을 사용하여 보안성을 높일 수 있었습니다.
+  
+  3. version 비교시 비교 함수가 복잡하게 되었습니다.
+      - version 비교를 위한 Utility Class 도입으로 가독성을 높일 수 있었습니다.
+  
+  
+  
+### 1.4. 프로젝트 환경
 
 - Language : Kotlin 1.9.25 (JDK 17)
 - Framework : Spring Boot 3.4.4
