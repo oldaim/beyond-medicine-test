@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "org.beyondmedicine"
-version = "0.0.1-SNAPSHOT"
+version = "1.0.0"
 
 java {
 	toolchain {
@@ -51,6 +51,10 @@ kotlin {
 	compilerOptions {
 		freeCompilerArgs.addAll("-Xjsr305=strict")
 	}
+}
+
+tasks.jar{
+	enabled = false
 }
 
 allOpen {
