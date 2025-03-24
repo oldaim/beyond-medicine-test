@@ -16,7 +16,7 @@ docker run --name $CONTAINER_NAME \
   -e MYSQL_DATABASE=$DATABASE_NAME \
   -e MYSQL_USER=$USER_NAME \
   -e MYSQL_PASSWORD=$USER_PASSWORD \
-  -d mysql:latest
+  -d mysql:9.2.0
 
 # Check if container started successfully
 if [ $? -eq 0 ]; then
@@ -25,3 +25,6 @@ if [ $? -eq 0 ]; then
 else
   echo "Failed to start MySQL container."
 fi
+
+
+
