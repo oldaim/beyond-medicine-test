@@ -24,7 +24,11 @@ data class UserVerificationRequestDto(
 
     companion object{
         fun create(userId: String, version: String, os: String, mode: String, hash: String): UserVerificationRequestDto {
-            return UserVerificationRequestDto(userId, version, os, mode, hash)
+
+            val osLowerCase = os.lowercase(Locale.getDefault())
+            val modeLowerCase = mode.lowercase(Locale.getDefault())
+
+            return UserVerificationRequestDto(userId, version, osLowerCase, modeLowerCase, hash)
         }
     }
 

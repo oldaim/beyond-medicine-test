@@ -15,7 +15,7 @@ data class ActivateAccessCodeRequestDto(
     val userId: String,
 
     @field:Length(min = 8, max = 8, message = "accessCode length must be 8")
-    @Schema(description = "처방코드 (8자리)", example = "Y6U8Y8U8")
+    @Schema(description = "처방코드 (8자리)", example = "Y1Z2R3T4")
     val accessCode: String
 )
 
@@ -24,7 +24,7 @@ data class ActivateAccessCodeResponseDto(
     @Schema(description = "사용자 ID", example = "e4e3ecbd-2208-4905-8120-426473d0eae9")
     val userId: String,
     
-    @Schema(description = "활성화된 처방코드", example = "Y6U8Y8U8")
+    @Schema(description = "활성화된 처방코드", example = "ZXCV1357")
     val accessCode: String,
     
     @Schema(description = "처방코드 활성화 시간", example = "2025-03-23T15:30:45.123")

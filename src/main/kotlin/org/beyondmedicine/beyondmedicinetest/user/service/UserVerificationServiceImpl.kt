@@ -11,6 +11,7 @@ import org.beyondmedicine.beyondmedicinetest.user.repository.UserVerificationRep
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.util.*
 
 @Service
 class UserVerificationServiceImpl(
@@ -141,9 +142,10 @@ class UserVerificationServiceImpl(
 
     // os와 mode로 생성한 hash를 반환
     private fun getHashString(os: String, mode: String): String {
+
         val hashString = "$os$mode$requestHashSecret"
 
-        val hashedString = DigestUtils.sha256Hex(hashString)
+        val hashedString: String = DigestUtils.sha256Hex(hashString)
 
         return hashedString
     }

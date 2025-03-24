@@ -42,6 +42,9 @@ VALUES ('VGV0O2pyOSM1MSMkMSMkMCMkNzIkNTgxOTYxIzMxIyQxIyQ3IyQ4OSQyNjEwMDIjNTEjJDE
 INSERT INTO access_code_history (hospital_id, access_code, created_at) 
 VALUES ('WGV0O2pyOSM1MSMkMSMkMCMkNzIkNTgxOTYxIzMxIyQxIyQ3IyQ4OSQyNjEwMDIjNTEjJDEjJDIjJDgz', 'TYUI8024', '2025-03-19 14:05:00');
 
+INSERT INTO access_code_history (hospital_id, access_code, created_at)
+VALUES ('WGV0O2pyOSM1MSMkMSMkMCMkNzIkNTgxOTYxIzMxIyQxIyQ3IyQ4OSQyNjEwMDIjNTEjJDEjJasdagz', 'Y1Z2R3T4', '2025-03-19 14:05:00');
+
 -- UserAccessCode 데이터 생성 (10개) - 5개는 ACTIVE, 5개는 EXPIRED 상태
 INSERT INTO user_access_code (user_id, access_code, status, activated_at, expires_at) 
 VALUES ('e4e3ecbd-2208-4905-8120-426473d0eae9', 'ABCD1234', 'ACTIVE', '2025-03-10 10:30:00', '2025-04-22 00:00:00');

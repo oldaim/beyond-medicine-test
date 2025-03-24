@@ -41,7 +41,7 @@ class GlobalExceptionHandler {
     @ExceptionHandler(IllegalArgumentException::class, BindException::class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     fun handleBadRequestException(e: Exception): ResponseEntity<ApiResponse<Void>> {
-        logger.error("Bad Request", e)
+        logger.error("${e.message}")
         return ApiResponse.badRequest()
     }
 

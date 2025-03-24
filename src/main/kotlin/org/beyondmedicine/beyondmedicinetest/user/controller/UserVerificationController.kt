@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController
 import io.swagger.v3.oas.annotations.responses.ApiResponse as SwaggerResponse
 
 @RestController
-@RequestMapping("/api/v1/user/verification")
+@RequestMapping("/api/v1/user")
 @Tag(name = "사용자용 검증 API", description = "사용자 검증 및 업데이트 상태 확인 API")
 class UserVerificationController(
     private val userVerificationService: UserVerificationService
@@ -51,21 +51,21 @@ class UserVerificationController(
             )
         ]
     )
-    @GetMapping("/request")
+    @GetMapping("/verification")
     fun verifyUserRequest(
-        @Parameter(description = "UUID 형식의 사용자 ID", required = true) 
+        @Parameter(description = "UUID 형식의 사용자 ID", required = true, example = "e4e3ecbd-2208-4905-8120-426473d0eae9")
         @RequestParam("userId", required = true) userId: String,
         
-        @Parameter(description = "Major.Minor.Patch 버전 (ex: 0.1.1, 0.1.2-alpha.1, 0.1.2-beta.1)", required = true)
+        @Parameter(description = "Major.Minor.Patch 버전 (ex: 0.1.1, 0.1.2-alpha.1, 0.1.2-beta.1)", required = true, example = "0.1.1")
         @RequestParam("version", required = true) version: String,
         
-        @Parameter(description = "운영체제 (Android 또는 iOS, 대소문자 구분 없음)", required = true)
+        @Parameter(description = "운영체제 (Android 또는 iOS, 대소문자 구분 없음)", required = true, example = "Android")
         @RequestParam("os", required = true) os: String,
         
-        @Parameter(description = "모드 (debug 또는 release, 대소문자 구분 없음)", required = true)
+        @Parameter(description = "모드 (debug 또는 release, 대소문자 구분 없음)", required = true, example = "debug")
         @RequestParam("mode", required = true) mode: String,
         
-        @Parameter(description = "OS와 모드에 따른 해시값", required = true)
+        @Parameter(description = "OS와 모드에 따른 해시값", required = true, example = "370901f93faca101b6a15d64325bb0d93de06cad06cbfd41ca196891c4edb145")
         @RequestParam("hash", required = true) hash: String
     ): ResponseEntity<ApiResponse<UpdateStatus>> {
 

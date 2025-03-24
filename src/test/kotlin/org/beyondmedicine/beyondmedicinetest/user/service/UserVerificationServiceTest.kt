@@ -260,6 +260,47 @@ class UserVerificationServiceTest {
 
     }
 
+
+    @ParameterizedTest
+    @ValueSource(strings = ["Android", "android", "ANDROID"])
+    @DisplayName("verifyUserRequest - 사용자 검증 성공 (OS 대소문자 구분)")
+    fun verifyUserRequest_success_osLowerCase(os: String) {
+
+        // given
+        // os 대소문자 구분 없이
+        val requestDto = UserVerificationRequestDto.create(
+            userId = testUserId,
+            version = "1.0.1",
+            os = os,
+            mode = testMode,
+            hash = testHash
+        )
+
+        // 앱
+        val appVersionDto = AppVersionDto(
+            latestVersion = "1.0.1",
+            minimumVersion = "0.9.0",
+            os = testOs,
+            mode = testMode,
+            hash = testHash
+        )
+
+        // mocks
+        every { userVerificationRepository.findAppVersionByOsAndMode(testOs, testMode) } returns appVersionDto
+        every { accessCodeService.isUserAccessCodeActivated(testUserId) } returns true
+
+        // when
+        val result = userVerificationService.verifyUserRequest(requestDto)
+
+        // then (문제없이 잘 수행되었나)
+        result shouldBe UpdateStatus.NO_UPDATE_REQUIRED
+
+        // verify
+        verify(exactly = 1) { userVerificationRepository.findAppVersionByOsAndMode(testOs, testMode) }
+        verify(exactly = 1) { accessCodeService.isUserAccessCodeActivated(testUserId) }
+
+    }
+
     @Test
     @DisplayName("verifyUserRequest - 사용자 검증 실패 (유효하지 않은 OS)")
     fun verifyUserRequest_failure_osNotFound() {
@@ -284,6 +325,46 @@ class UserVerificationServiceTest {
         // verify
         verify(exactly = 0) { userVerificationRepository.findAppVersionByOsAndMode(any(), any()) }
         verify(exactly = 0) { accessCodeService.isUserAccessCodeActivated(any()) }
+
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = ["debug", "DEBUG", "Debug"])
+    @DisplayName("verifyUserRequest - 사용자 검증 성공 (mode 대소문자 구분)")
+    fun verifyUserRequest_success_modeLowerCase(mode: String) {
+
+        // given
+        // mode 대소문자 구분 없이
+        val requestDto = UserVerificationRequestDto.create(
+            userId = testUserId,
+            version = "1.0.1",
+            os = testOs,
+            mode = mode,
+            hash = testHash
+        )
+
+        // 앱
+        val appVersionDto = AppVersionDto(
+            latestVersion = "1.0.1",
+            minimumVersion = "0.9.0",
+            os = testOs,
+            mode = testMode,
+            hash = testHash
+        )
+
+        // mocks
+        every { userVerificationRepository.findAppVersionByOsAndMode(testOs, testMode) } returns appVersionDto
+        every { accessCodeService.isUserAccessCodeActivated(testUserId) } returns true
+
+        // when
+        val result = userVerificationService.verifyUserRequest(requestDto)
+
+        // then (문제없이 잘 수행되었나)
+        result shouldBe UpdateStatus.NO_UPDATE_REQUIRED
+
+        // verify
+        verify(exactly = 1) { userVerificationRepository.findAppVersionByOsAndMode(testOs, testMode) }
+        verify(exactly = 1) { accessCodeService.isUserAccessCodeActivated(testUserId) }
 
     }
 
