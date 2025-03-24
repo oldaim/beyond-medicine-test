@@ -96,7 +96,7 @@ class AccessCodeServiceTest {
     
     @Test
     @DisplayName("activateAccessCode - 코드 활성화 성공 (활성화 된 코드가 없는 경우)")
-    fun activateAccessCode_success() {
+    fun activateAccessCode_success_noActivatedAccessCode() {
         // given
         val requestDto = ActivateAccessCodeRequestDto(
             userId = testUserId,
@@ -163,7 +163,7 @@ class AccessCodeServiceTest {
 
     @Test
     @DisplayName("activateAccessCode - 코드 활성화 실패 (유효하지 않은 access code)")
-    fun activateAccessCode_invalidAccessCode_throwsException() {
+    fun activateAccessCode_failure_invalidAccessCode() {
         // given
         val requestDto = ActivateAccessCodeRequestDto(
             userId = testUserId,
@@ -185,7 +185,7 @@ class AccessCodeServiceTest {
 
     @Test
     @DisplayName("activateAccessCode - 코드 활성화 실패 (이미 활성화 된 코드가 있는 경우)")
-    fun activateAccessCode_alreadyActivated_throwsException() {
+    fun activateAccessCode_failure_alreadyActivated() {
         // given
         val requestDto = ActivateAccessCodeRequestDto(
             userId = testUserId,

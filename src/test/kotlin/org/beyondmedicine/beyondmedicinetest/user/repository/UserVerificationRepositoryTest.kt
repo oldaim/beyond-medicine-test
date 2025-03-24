@@ -67,7 +67,7 @@ class UserVerificationRepositoryTest {
 
     @Test
     @DisplayName("AppVersion 조회 - 성공 (존재하지않는 OS, Mode)")
-    fun findAppVersionByOsAndMode_notFound() {
+    fun findAppVersionByOsAndMode_success_notFound() {
         // when
         val result = userVerificationRepository.findAppVersionByOsAndMode("unknown", "unknown")
 
